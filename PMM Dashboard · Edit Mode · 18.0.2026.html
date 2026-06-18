@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<!-- saved from url=(0069)file:///C:/Users/GUILM/Downloads/PMM_Dashboard_Edit_Mode_2026_11.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMM Dashboard · Edit Mode · 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link href="./PMM Dashboard · Edit Mode · 18.0.2026_files/css2" rel="stylesheet">
+<!-- EmailJS for change notifications -->
+<script src="./PMM Dashboard · Edit Mode · 18.0.2026_files/email.min.js.download"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--bg2:#f4f9ff;--bg3:#e8f4ff;
+  --text:#0a1628;--text2:#3a5068;--text3:#7a9ab8;
+  --border:rgba(1,173,255,0.15);--border2:rgba(1,173,255,0.3);
+  --radius:8px;--radius-lg:12px;--font:'Inter',sans-serif;
+  --hx-blue:#01ADFF;--hx-cyan:#04D0E6;--hx-lime:#DFF73F;
+  --hx-dark:#0077A8;--hx-deep:#004E70;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#091828;--bg2:#0d2035;--bg3:#112840;
+  --text:#e0f0ff;--text2:#7aadcc;--text3:#3a6888;
+  --border:rgba(1,173,255,0.15);--border2:rgba(1,173,255,0.3);
+}}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:13px;line-height:1.5;padding:20px 24px 40px;max-width:1400px;margin:0 auto}
+.hdr{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px;flex-wrap:wrap;gap:12px}
+.hdr h1{font-size:20px;font-weight:600}
+.hdr p{font-size:12px;color:var(--text2);margin-top:3px}
+.pmm-badge{background:#fff8e0;border:0.5px solid #e0b800;color:#7a6000;font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;display:flex;align-items:center;gap:5px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.stat{background:var(--bg2);border-radius:var(--radius);padding:10px 14px;border:0.5px solid var(--border)}
+.stat .lbl{font-size:11px;color:var(--text2);margin-bottom:3px}
+.stat .val{font-size:22px;font-weight:600;color:var(--hx-blue)}
+.controls{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.pill-group{display:flex;gap:5px}
+button.pill{padding:4px 12px;font-size:11px;font-weight:500;border-radius:20px;cursor:pointer;border:0.5px solid var(--border2);background:none;color:var(--text2);font-family:var(--font)}
+button.pill.active{background:var(--hx-blue);color:#fff;border-color:var(--hx-blue)}
+.tog-group{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+button.tog{display:flex;align-items:center;gap:5px;padding:3px 10px;font-size:11px;font-weight:500;border-radius:20px;cursor:pointer;font-family:var(--font)}
+.view-btn{padding:5px 14px;font-size:12px;border-radius:6px;cursor:pointer;border:0.5px solid var(--border2);background:none;color:var(--text2);font-family:var(--font)}
+.view-btn.active{background:#e0f4ff;color:var(--hx-dark);border-color:var(--hx-blue)}
+.gantt-outer{border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.gantt-scroll{overflow-x:auto}
+.badge{display:inline-block;font-size:9px;font-weight:600;padding:1px 5px;border-radius:8px;vertical-align:middle}
+.badge-mega{background:#e0f4ff;color:#004E70;border:0.5px solid var(--hx-blue)}
+.badge-major{background:#e0fcff;color:#006070;border:0.5px solid var(--hx-cyan)}
+.badge-minor{background:#f7ffcc;color:#5a6600;border:0.5px solid #b8c400}
+.status{display:inline-block;font-size:10px;font-weight:500;padding:1px 6px;border-radius:10px}
+.s-done{background:#e0fcff;color:#006070}
+.s-in-progress{background:#e0f4ff;color:#0077A8}
+.s-upcoming{background:#fff8e0;color:#7a6000}
+.s-planned{background:#f0f0ff;color:#3a3490}
+.s-open{background:#f0f4f8;color:#3a5068}
+.legend{display:flex;gap:16px;padding:10px 14px;border-top:0.5px solid var(--border);flex-wrap:wrap;align-items:center;background:var(--bg2)}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)}
+#view-table{display:none}
+table.dt{width:100%;border-collapse:collapse;font-size:12px}
+table.dt th{padding:8px 10px;text-align:left;font-weight:500;font-size:11px;color:var(--text2);border-bottom:0.5px solid var(--border2);background:var(--bg2);position:sticky;top:0;z-index:5}
+table.dt td{padding:7px 10px;border-bottom:0.5px solid var(--border);vertical-align:middle}
+table.dt tbody tr:hover{background:var(--bg2);cursor:pointer}
+.overlay{position:fixed;inset:0;background:rgba(0,10,30,0.4);z-index:900;display:none}
+.overlay.open{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:460px;background:var(--bg);border-left:0.5px solid var(--border2);z-index:901;overflow-y:auto;transform:translateX(100%);transition:transform .2s ease}
+.drawer.open{transform:translateX(0)}
+.drawer-head{padding:18px 20px 14px;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:5}
+.drawer-body{padding:16px 20px 24px}
+.sec-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin-bottom:10px;margin-top:18px}
+.close-btn{background:none;border:none;cursor:pointer;font-size:22px;color:var(--text2);line-height:1;padding:0;float:right}
+.stage-card{border:0.5px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden}
+.stage-card-head{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;user-select:none}
+.stage-card-head:hover{background:var(--bg2)}
+.stage-chevron{margin-left:auto;font-size:12px;color:var(--text3);transition:transform .15s}
+.stage-card-body{padding:0 12px;max-height:0;overflow:hidden;transition:max-height .25s ease,padding .2s}
+.stage-card-body.open{max-height:500px;padding:8px 12px 12px}
+.coll-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--border);font-size:12px;color:var(--text2)}
+.coll-item:last-child{border-bottom:none}
+.coll-dot{width:6px;height:6px;border-radius:1px;flex-shrink:0;margin-top:4px}
+.coll-link{font-size:10px;color:var(--hx-blue);text-decoration:none;margin-left:auto;white-space:nowrap;flex-shrink:0}
+.coll-link:hover{text-decoration:underline}
+.milestone-row{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--bg2);border-radius:8px;margin-bottom:6px}
+.m-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.training-block{background:#f7ffcc;border:0.5px solid #b8c400;border-radius:10px;padding:12px 14px;margin-top:12px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,10,30,0.45);z-index:1000;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg);border-radius:var(--radius-lg);border:0.5px solid var(--border2);padding:20px;width:520px;max-height:88vh;overflow-y:auto}
+.field-group{margin-bottom:12px}
+.field-group label{display:block;font-size:11px;color:var(--text2);margin-bottom:4px}
+.field-group input,.field-group textarea,.field-group select{width:100%;font-size:12px;padding:6px 8px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg);color:var(--text);font-family:var(--font)}
+.field-group textarea{resize:vertical}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn-cancel{padding:6px 16px;font-size:12px;border-radius:6px;cursor:pointer;border:0.5px solid var(--border2);background:none;color:var(--text2);font-family:var(--font)}
+.btn-save{padding:6px 16px;font-size:12px;border-radius:6px;cursor:pointer;background:var(--hx-blue);color:#fff;border:none;font-weight:500;font-family:var(--font)}
+.edit-btn{width:100%;padding:9px;font-size:13px;font-weight:500;background:var(--hx-blue);color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:var(--font);margin-top:14px}
+.sec-btn{width:100%;padding:8px;font-size:12px;font-weight:500;background:none;color:var(--hx-blue);border:0.5px solid var(--hx-blue);border-radius:8px;cursor:pointer;font-family:var(--font);margin-top:8px}
+
+/* change log panel */
+.changelog{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-top:18px}
+.changelog h3{font-size:12px;font-weight:600;margin-bottom:10px;color:var(--text2)}
+.log-entry{font-size:11px;color:var(--text2);padding:5px 0;border-bottom:0.5px solid var(--border);display:flex;gap:10px}
+.log-entry:last-child{border-bottom:none}
+.log-time{color:var(--text3);flex-shrink:0;width:120px}
+.log-who{color:var(--hx-blue);font-weight:500;flex-shrink:0;width:90px}
+.audience-section{background:var(--bg2);border-radius:10px;padding:12px 14px;margin-bottom:10px;border:0.5px solid var(--border)}
+.audience-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.audience-row:last-child{margin-bottom:0}
+.aud-icon{font-size:16px;flex-shrink:0;width:20px;text-align:center}
+.aud-label{font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px}
+.aud-text{font-size:11px;color:var(--text2);line-height:1.5}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#0a1628;color:#fff;font-size:12px;padding:8px 18px;border-radius:20px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:3000}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="hdr">
+  <div>
+    <h1>Product Marketing <span style="color:var(--hx-blue);font-size:14px;font-weight:500">· Edit Mode</span></h1>
+    <p>Release timeline · iPA / PA / PR · Jun – Dec 2026 · Changes notify Maxime in real time</p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span class="pmm-badge">✏️ PMM Team Only</span>
+    <button class="view-btn active" id="btn-gantt" onclick="setView(&#39;gantt&#39;)">Timeline</button>
+    <button class="view-btn" id="btn-table" onclick="setView(&#39;table&#39;)">Table</button>
+  </div>
+</div>
+
+<div class="stats" id="stats-row"><div class="stat"><div class="lbl">Products tracked</div><div class="val">13</div></div>
+     <div class="stat"><div class="lbl">Collateral items</div><div class="val">92</div></div>
+     <div class="stat"><div class="lbl">Active / upcoming</div><div class="val">8</div></div>
+     <div class="stat"><div class="lbl">Launches this month</div><div class="val">6</div></div></div>
+
+<div class="controls">
+  <div class="pill-group" id="port-pills"><button class="pill active" onclick="setPortfolio(&#39;All&#39;)">All</button><button class="pill" onclick="setPortfolio(&#39;Safety&#39;)">Safety</button><button class="pill" onclick="setPortfolio(&#39;Operations&#39;)">Operations</button><button class="pill" onclick="setPortfolio(&#39;Resource Opt.&#39;)">Resource Opt.</button></div>
+  <div class="tog-group" id="m-toggles"><button class="tog" onclick="toggleMS(&#39;pg&#39;)" style="border:0.5px solid #888780;color:#888780;background:#88878022;opacity:1">
+      <svg width="12" height="12" style="flex-shrink:0"><polygon points="6,11 1,2 11,2" fill="#888780"></polygon></svg>Proving Ground</button><button class="tog" onclick="toggleMS(&#39;pilot&#39;)" style="border:0.5px solid #0077A8;color:#0077A8;background:#0077A822;opacity:1">
+      <svg width="12" height="12" style="flex-shrink:0"><polygon points="6,1 11,6 6,11 1,6" fill="#0077A8"></polygon></svg>Pilot</button><button class="tog" onclick="toggleMS(&#39;iPA&#39;)" style="border:0.5px solid #01ADFF;color:#01ADFF;background:#01ADFF22;opacity:1">
+      <svg width="12" height="12" style="flex-shrink:0"><rect x="1" y="3" width="10" height="6" rx="2" fill="#01ADFF"></rect></svg>iPA</button><button class="tog" onclick="toggleMS(&#39;training&#39;)" style="border:0.5px solid #a0b000;color:#a0b000;background:#a0b00022;opacity:1">
+      <svg width="12" height="12" style="flex-shrink:0"><polygon points="6,1 7.2,4.3 10.8,4.3 8,6.5 9,10 6,8 3,10 4,6.5 1.2,4.3 4.8,4.3" fill="#a0b000" stroke="#7a8800" stroke-width="0.5"></polygon></svg>Training</button><button class="tog" onclick="toggleMS(&#39;PA&#39;)" style="border:0.5px solid #0077A8;color:#0077A8;background:#0077A822;opacity:1">
+      <svg width="12" height="12" style="flex-shrink:0"><rect x="1" y="3" width="10" height="6" rx="2" fill="#0077A8"></rect></svg>PA</button><button class="tog" onclick="toggleMS(&#39;PR&#39;)" style="border:0.5px solid #04D0E6;color:#04D0E6;background:#04D0E622;opacity:1">
+      <svg width="12" height="12" style="flex-shrink:0"><rect x="1" y="3" width="10" height="6" rx="2" fill="#04D0E6"></rect></svg>PR</button></div>
+</div>
+
+<div id="view-gantt" class="gantt-outer">
+  <div class="gantt-scroll"><div id="gantt-table"><table style="width:100%;border-collapse:collapse;"><tbody><tr style="background:var(--bg2)"><th style="width:28px;min-width:28px;border-bottom:0.5px solid var(--border2);border-right:0.5px solid var(--border);padding:0"></th><th style="width:190px;min-width:190px;padding:6px 10px;font-size:11px;font-weight:500;color:var(--text2);text-align:left;border-bottom:0.5px solid var(--border2);border-right:0.5px solid var(--border);position:sticky;left:28px;z-index:10;background:var(--bg2)">Product</th><th style="border-bottom:0.5px solid var(--border2);padding:0;font-weight:normal"><svg width="900" height="28" style="display:block"><line x1="0" y1="0" x2="0" y2="28" stroke="var(--border)" stroke-width="0.5"></line><text x="4" y="19" font-size="10" fill="var(--text2)" font-family="Inter,sans-serif">May 26</text><line x1="120" y1="0" x2="120" y2="28" stroke="var(--border)" stroke-width="0.5"></line><text x="124" y="19" font-size="10" fill="var(--text2)" font-family="Inter,sans-serif">Jun 26</text><line x1="236" y1="0" x2="236" y2="28" stroke="var(--border)" stroke-width="0.5"></line><text x="240" y="19" font-size="10" fill="var(--text2)" font-family="Inter,sans-serif">Jul 26</text><line x1="355" y1="0" x2="355" y2="28" stroke="var(--border)" stroke-width="0.5"></line><text x="359" y="19" font-size="10" fill="var(--text2)" font-family="Inter,sans-serif">Aug 26</text><line x1="475" y1="0" x2="475" y2="28" stroke="var(--border)" stroke-width="0.5"></line><text x="479" y="19" font-size="10" fill="var(--text2)" font-family="Inter,sans-serif">Sept 26</text><line x1="591" y1="0" x2="591" y2="28" stroke="var(--border)" stroke-width="0.5"></line><text x="595" y="19" font-size="10" fill="var(--text2)" font-family="Inter,sans-serif">Oct 26</text><line x1="711" y1="0" x2="711" y2="28" stroke="var(--border)" stroke-width="0.5"></line><text x="715" y="19" font-size="10" fill="var(--text2)" font-family="Inter,sans-serif">Nov 26</text><line x1="827" y1="0" x2="827" y2="28" stroke="var(--border)" stroke-width="0.5"></line><text x="831" y="19" font-size="10" fill="var(--text2)" font-family="Inter,sans-serif">Dec 26</text><line x1="186" y1="0" x2="186" y2="28" stroke="#E24B4A" stroke-width="1.5" stroke-dasharray="3 2"></line><text x="189" y="10" font-size="9" fill="#E24B4A" font-family="Inter,sans-serif">Today</text></svg></th></tr><tr onclick="openDrawer(2)" title="Click for details" style="cursor:pointer"><td rowspan="8" style="width:28px;min-width:28px;border-bottom:0.5px solid var(--border2);border-right:0.5px solid var(--border);background:#01ADFF;padding:0;vertical-align:middle;text-align:center;"><span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#fff;opacity:.95;white-space:nowrap;display:block">Safety</span></td><td style="width:190px;min-width:190px;padding:5px 10px;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);vertical-align:middle;position:sticky;left:28px;z-index:9;background:var(--bg)"><span style="font-size:12px;font-weight:500;display:block;margin-bottom:3px">CAS 10.36</span><span class="badge badge-major">Major</span></td><td style="vertical-align:middle;border-bottom:0.5px solid var(--border);padding:0"><svg width="900" height="38" style="display:block"><line x1="0" y1="0" x2="0" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="120" y1="0" x2="120" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="236" y1="0" x2="236" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="355" y1="0" x2="355" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="475" y1="0" x2="475" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="591" y1="0" x2="591" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="711" y1="0" x2="711" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="827" y1="0" x2="827" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="186" y1="0" x2="186" y2="38" stroke="#E24B4A" stroke-width="1" opacity=".3"></line><polygon points="173,27 167,13 179,13" fill="#888780" opacity=".85"></polygon><polygon points="254,10 261,19 254,28 247,19" fill="#0077A8" opacity=".85"></polygon><rect x="184" y="6" width="124" height="26" rx="3" fill="#01ADFF" opacity=".15"></rect><rect x="184" y="8" width="5" height="22" rx="2" fill="#01ADFF" opacity=".9"></rect><text x="193" y="20" font-size="9" fill="#01ADFF" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">iPA</text><rect x="308" y="7" width="16" height="24" rx="3" fill="#04D0E6" opacity=".9"></rect><text x="311" y="20" font-size="8" fill="#fff" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">PR</text><polygon points="203.0,11.0 205.0,16.3 210.6,16.5 206.2,20.0 207.7,25.5 203.0,22.4 198.3,25.5 199.8,20.0 195.4,16.5 201.0,16.3" fill="#DFF73F" stroke="#7a8800" stroke-width="0.8"><title>APAC &amp; EMEA Sales training</title></polygon></svg></td></tr><tr onclick="openDrawer(1)" title="Click for details" style="cursor:pointer"><td style="width:190px;min-width:190px;padding:5px 10px;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);vertical-align:middle;position:sticky;left:28px;z-index:9;background:var(--bg)"><span style="font-size:12px;font-weight:500;display:block;margin-bottom:3px">VIS Release</span><span class="badge badge-mega">Mega</span></td><td style="vertical-align:middle;border-bottom:0.5px solid var(--border);padding:0"><svg width="900" height="38" style="display:block"><line x1="0" y1="0" x2="0" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="120" y1="0" x2="120" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="236" y1="0" x2="236" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="355" y1="0" x2="355" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="475" y1="0" x2="475" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="591" y1="0" x2="591" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="711" y1="0" x2="711" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="827" y1="0" x2="827" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="186" y1="0" x2="186" y2="38" stroke="#E24B4A" stroke-width="1" opacity=".3"></line><polygon points="173,27 167,13 179,13" fill="#888780" opacity=".85"></polygon><polygon points="254,10 261,19 254,28 247,19" fill="#0077A8" opacity=".85"></polygon><rect x="184" y="6" width="139" height="26" rx="3" fill="#01ADFF" opacity=".15"></rect><rect x="184" y="8" width="5" height="22" rx="2" fill="#01ADFF" opacity=".9"></rect><text x="193" y="20" font-size="9" fill="#01ADFF" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">iPA</text><rect x="323" y="7" width="16" height="24" rx="3" fill="#04D0E6" opacity=".9"></rect><text x="326" y="20" font-size="8" fill="#fff" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">PR</text><polygon points="203.0,11.0 205.0,16.3 210.6,16.5 206.2,20.0 207.7,25.5 203.0,22.4 198.3,25.5 199.8,20.0 195.4,16.5 201.0,16.3" fill="#DFF73F" stroke="#7a8800" stroke-width="0.8"><title>Global Sales Training</title></polygon></svg></td></tr><tr onclick="openDrawer(3)" title="Click for details" style="cursor:pointer"><td style="width:190px;min-width:190px;padding:5px 10px;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);vertical-align:middle;position:sticky;left:28px;z-index:9;background:var(--bg)"><span style="font-size:12px;font-weight:500;display:block;margin-bottom:3px">CAS Insights 5.0</span><span class="badge badge-minor">Minor</span></td><td style="vertical-align:middle;border-bottom:0.5px solid var(--border);padding:0"><svg width="900" height="38" style="display:block"><line x1="0" y1="0" x2="0" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="120" y1="0" x2="120" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="236" y1="0" x2="236" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="355" y1="0" x2="355" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="475" y1="0" x2="475" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="591" y1="0" x2="591" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="711" y1="0" x2="711" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="827" y1="0" x2="827" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="186" y1="0" x2="186" y2="38" stroke="#E24B4A" stroke-width="1" opacity=".3"></line><polygon points="176,27 170,13 182,13" fill="#888780" opacity=".85"></polygon><polygon points="258,10 265,19 258,28 251,19" fill="#0077A8" opacity=".85"></polygon><rect x="184" y="6" width="232" height="26" rx="3" fill="#01ADFF" opacity=".15"></rect><rect x="184" y="8" width="5" height="22" rx="2" fill="#01ADFF" opacity=".9"></rect><text x="193" y="20" font-size="9" fill="#01ADFF" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">iPA</text><rect x="416" y="7" width="16" height="24" rx="3" fill="#04D0E6" opacity=".9"></rect><text x="419" y="20" font-size="8" fill="#fff" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">PR</text><polygon points="203.0,11.0 205.0,16.3 210.6,16.5 206.2,20.0 207.7,25.5 203.0,22.4 198.3,25.5 199.8,20.0 195.4,16.5 201.0,16.3" fill="#DFF73F" stroke="#7a8800" stroke-width="0.8"><title>APAC sales training</title></polygon></svg></td></tr><tr onclick="openDrawer(12)" title="Click for details" style="cursor:pointer"><td style="width:190px;min-width:190px;padding:5px 10px;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);vertical-align:middle;position:sticky;left:28px;z-index:9;background:var(--bg)"><span style="font-size:12px;font-weight:500;display:block;margin-bottom:3px">4D Radar</span><span class="badge badge-minor">Minor</span></td><td style="vertical-align:middle;border-bottom:0.5px solid var(--border);padding:0"><svg width="900" height="38" style="display:block"><line x1="0" y1="0" x2="0" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="120" y1="0" x2="120" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="236" y1="0" x2="236" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="355" y1="0" x2="355" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="475" y1="0" x2="475" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="591" y1="0" x2="591" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="711" y1="0" x2="711" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="827" y1="0" x2="827" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="186" y1="0" x2="186" y2="38" stroke="#E24B4A" stroke-width="1" opacity=".3"></line><rect x="200" y="6" width="108" height="26" rx="3" fill="#0077A8" opacity=".15"></rect><rect x="200" y="8" width="5" height="22" rx="2" fill="#0077A8" opacity=".9"></rect><text x="209" y="20" font-size="9" fill="#0077A8" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">PA</text><rect x="308" y="7" width="16" height="24" rx="3" fill="#04D0E6" opacity=".9"></rect><text x="311" y="20" font-size="8" fill="#fff" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">PR</text></svg></td></tr><tr onclick="openDrawer(4)" title="Click for details" style="cursor:pointer"><td style="width:190px;min-width:190px;padding:5px 10px;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);vertical-align:middle;position:sticky;left:28px;z-index:9;background:var(--bg)"><span style="font-size:12px;font-weight:500;display:block;margin-bottom:3px">OAS Web</span><span class="badge badge-minor">Minor</span></td><td style="vertical-align:middle;border-bottom:0.5px solid var(--border);padding:0"><svg width="900" height="38" style="display:block"><line x1="0" y1="0" x2="0" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="120" y1="0" x2="120" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="236" y1="0" x2="236" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="355" y1="0" x2="355" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="475" y1="0" x2="475" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="591" y1="0" x2="591" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="711" y1="0" x2="711" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="827" y1="0" x2="827" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="186" y1="0" x2="186" y2="38" stroke="#E24B4A" stroke-width="1" opacity=".3"></line><rect x="230" y="7" width="16" height="24" rx="3" fill="#04D0E6" opacity=".9"></rect><text x="233" y="20" font-size="8" fill="#fff" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">PR</text></svg></td></tr><tr onclick="openDrawer(6)" title="Click for details" style="cursor:pointer"><td style="width:190px;min-width:190px;padding:5px 10px;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);vertical-align:middle;position:sticky;left:28px;z-index:9;background:var(--bg)"><span style="font-size:12px;font-weight:500;display:block;margin-bottom:3px">IAS (Helios)</span><span class="badge badge-minor">Minor</span></td><td style="vertical-align:middle;border-bottom:0.5px solid var(--border);padding:0"><svg width="900" height="38" style="display:block"><line x1="0" y1="0" x2="0" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="120" y1="0" x2="120" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="236" y1="0" x2="236" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="355" y1="0" x2="355" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="475" y1="0" x2="475" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="591" y1="0" x2="591" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="711" y1="0" x2="711" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="827" y1="0" x2="827" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="186" y1="0" x2="186" y2="38" stroke="#E24B4A" stroke-width="1" opacity=".3"></line><rect x="455" y="6" width="131" height="26" rx="3" fill="#01ADFF" opacity=".15"></rect><rect x="455" y="8" width="5" height="22" rx="2" fill="#01ADFF" opacity=".9"></rect><text x="464" y="20" font-size="9" fill="#01ADFF" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">iPA</text><rect x="586" y="7" width="16" height="24" rx="3" fill="#04D0E6" opacity=".9"></rect><text x="589" y="20" font-size="8" fill="#fff" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">PR</text></svg></td></tr><tr onclick="openDrawer(5)" title="Click for details" style="cursor:pointer"><td style="width:190px;min-width:190px;padding:5px 10px;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);vertical-align:middle;position:sticky;left:28px;z-index:9;background:var(--bg)"><span style="font-size:12px;font-weight:500;display:block;margin-bottom:3px">UG CAS</span><span class="badge badge-major">Major</span></td><td style="vertical-align:middle;border-bottom:0.5px solid var(--border);padding:0"><svg width="900" height="38" style="display:block"><line x1="0" y1="0" x2="0" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="120" y1="0" x2="120" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="236" y1="0" x2="236" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="355" y1="0" x2="355" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="475" y1="0" x2="475" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="591" y1="0" x2="591" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="711" y1="0" x2="711" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="827" y1="0" x2="827" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="186" y1="0" x2="186" y2="38" stroke="#E24B4A" stroke-width="1" opacity=".3"></line><polygon points="362,27 356,13 368,13" fill="#888780" opacity=".85"></polygon><polygon points="505,10 512,19 505,28 498,19" fill="#0077A8" opacity=".85"></polygon><rect x="528" y="6" width="158" height="26" rx="3" fill="#01ADFF" opacity=".15"></rect><rect x="528" y="8" width="5" height="22" rx="2" fill="#01ADFF" opacity=".9"></rect><text x="537" y="20" font-size="9" fill="#01ADFF" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">iPA</text><rect x="686" y="7" width="16" height="24" rx="3" fill="#04D0E6" opacity=".9"></rect><text x="689" y="20" font-size="8" fill="#fff" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">PR</text></svg></td></tr><tr onclick="openDrawer(13)" title="Click for details" style="cursor:pointer"><td style="width:190px;min-width:190px;padding:5px 10px;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);vertical-align:middle;position:sticky;left:28px;z-index:9;background:var(--bg)"><span style="font-size:12px;font-weight:500;display:block;margin-bottom:3px">Antenna Mast</span><span class="badge badge-minor">Minor</span></td><td style="vertical-align:middle;border-bottom:0.5px solid var(--border);padding:0"><svg width="900" height="38" style="display:block"><line x1="0" y1="0" x2="0" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="120" y1="0" x2="120" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="236" y1="0" x2="236" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="355" y1="0" x2="355" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="475" y1="0" x2="475" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="591" y1="0" x2="591" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="711" y1="0" x2="711" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="827" y1="0" x2="827" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="186" y1="0" x2="186" y2="38" stroke="#E24B4A" stroke-width="1" opacity=".3"></line><rect x="586" y="7" width="16" height="24" rx="3" fill="#04D0E6" opacity=".9"></rect><text x="589" y="20" font-size="8" fill="#fff" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">PR</text></svg></td></tr><tr onclick="openDrawer(7)" title="Click for details" style="cursor:pointer"><td rowspan="3" style="width:28px;min-width:28px;border-bottom:0.5px solid var(--border2);border-right:0.5px solid var(--border);background:#04D0E6;padding:0;vertical-align:middle;text-align:center;"><span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#fff;opacity:.95;white-space:nowrap;display:block">Operations</span></td><td style="width:190px;min-width:190px;padding:5px 10px;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);vertical-align:middle;position:sticky;left:28px;z-index:9;background:var(--bg)"><span style="font-size:12px;font-weight:500;display:block;margin-bottom:3px">Asset Health</span><span class="badge badge-major">Major</span></td><td style="vertical-align:middle;border-bottom:0.5px solid var(--border);padding:0"><svg width="900" height="38" style="display:block"><line x1="0" y1="0" x2="0" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="120" y1="0" x2="120" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="236" y1="0" x2="236" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="355" y1="0" x2="355" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="475" y1="0" x2="475" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="591" y1="0" x2="591" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="711" y1="0" x2="711" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="827" y1="0" x2="827" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="186" y1="0" x2="186" y2="38" stroke="#E24B4A" stroke-width="1" opacity=".3"></line><rect x="227" y="6" width="10" height="26" rx="3" fill="#0077A8" opacity=".15"></rect><rect x="227" y="8" width="5" height="22" rx="2" fill="#0077A8" opacity=".9"></rect><rect x="227" y="7" width="16" height="24" rx="3" fill="#04D0E6" opacity=".9"></rect><text x="230" y="20" font-size="8" fill="#fff" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">PR</text></svg></td></tr><tr onclick="openDrawer(8)" title="Click for details" style="cursor:pointer"><td style="width:190px;min-width:190px;padding:5px 10px;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);vertical-align:middle;position:sticky;left:28px;z-index:9;background:var(--bg)"><span style="font-size:12px;font-weight:500;display:block;margin-bottom:3px">OP Pro / OAS HW</span><span class="badge badge-major">Major</span></td><td style="vertical-align:middle;border-bottom:0.5px solid var(--border);padding:0"><svg width="900" height="38" style="display:block"><line x1="0" y1="0" x2="0" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="120" y1="0" x2="120" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="236" y1="0" x2="236" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="355" y1="0" x2="355" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="475" y1="0" x2="475" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="591" y1="0" x2="591" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="711" y1="0" x2="711" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="827" y1="0" x2="827" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="186" y1="0" x2="186" y2="38" stroke="#E24B4A" stroke-width="1" opacity=".3"></line><polygon points="91,27 85,13 97,13" fill="#888780" opacity=".85"></polygon><polygon points="227,10 234,19 227,28 220,19" fill="#0077A8" opacity=".85"></polygon><rect x="258" y="6" width="38" height="26" rx="3" fill="#01ADFF" opacity=".15"></rect><rect x="258" y="8" width="5" height="22" rx="2" fill="#01ADFF" opacity=".9"></rect><text x="267" y="20" font-size="9" fill="#01ADFF" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">iPA</text><rect x="296" y="7" width="16" height="24" rx="3" fill="#04D0E6" opacity=".9"></rect><text x="299" y="20" font-size="8" fill="#fff" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">PR</text></svg></td></tr><tr onclick="openDrawer(9)" title="Click for details" style="cursor:pointer"><td style="width:190px;min-width:190px;padding:5px 10px;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);vertical-align:middle;position:sticky;left:28px;z-index:9;background:var(--bg)"><span style="font-size:12px;font-weight:500;display:block;margin-bottom:3px">OP Tracker</span><span class="badge badge-mega">Mega</span></td><td style="vertical-align:middle;border-bottom:0.5px solid var(--border);padding:0"><svg width="900" height="38" style="display:block"><line x1="0" y1="0" x2="0" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="120" y1="0" x2="120" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="236" y1="0" x2="236" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="355" y1="0" x2="355" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="475" y1="0" x2="475" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="591" y1="0" x2="591" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="711" y1="0" x2="711" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="827" y1="0" x2="827" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="186" y1="0" x2="186" y2="38" stroke="#E24B4A" stroke-width="1" opacity=".3"></line><polygon points="254,27 248,13 260,13" fill="#888780" opacity=".85"></polygon><polygon points="362,10 369,19 362,28 355,19" fill="#0077A8" opacity=".85"></polygon><rect x="366" y="6" width="201" height="26" rx="3" fill="#01ADFF" opacity=".15"></rect><rect x="366" y="8" width="5" height="22" rx="2" fill="#01ADFF" opacity=".9"></rect><text x="375" y="20" font-size="9" fill="#01ADFF" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">iPA</text><rect x="567" y="7" width="16" height="24" rx="3" fill="#04D0E6" opacity=".9"></rect><text x="570" y="20" font-size="8" fill="#fff" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">PR</text></svg></td></tr><tr onclick="openDrawer(10)" title="Click for details" style="cursor:pointer"><td rowspan="2" style="width:28px;min-width:28px;border-bottom:0.5px solid var(--border2);border-right:0.5px solid var(--border);background:#0077A8;padding:0;vertical-align:middle;text-align:center;"><span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#fff;opacity:.95;white-space:nowrap;display:block">Resource Opt.</span></td><td style="width:190px;min-width:190px;padding:5px 10px;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);vertical-align:middle;position:sticky;left:28px;z-index:9;background:var(--bg)"><span style="font-size:12px;font-weight:500;display:block;margin-bottom:3px">Drill Hole Manager</span><span class="badge badge-major">Major</span></td><td style="vertical-align:middle;border-bottom:0.5px solid var(--border);padding:0"><svg width="900" height="38" style="display:block"><line x1="0" y1="0" x2="0" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="120" y1="0" x2="120" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="236" y1="0" x2="236" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="355" y1="0" x2="355" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="475" y1="0" x2="475" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="591" y1="0" x2="591" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="711" y1="0" x2="711" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="827" y1="0" x2="827" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="186" y1="0" x2="186" y2="38" stroke="#E24B4A" stroke-width="1" opacity=".3"></line><rect x="590" y="6" width="158" height="26" rx="3" fill="#01ADFF" opacity=".15"></rect><rect x="590" y="8" width="5" height="22" rx="2" fill="#01ADFF" opacity=".9"></rect><text x="599" y="20" font-size="9" fill="#01ADFF" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">iPA</text><rect x="748" y="7" width="16" height="24" rx="3" fill="#04D0E6" opacity=".9"></rect><text x="751" y="20" font-size="8" fill="#fff" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">PR</text></svg></td></tr><tr onclick="openDrawer(11)" title="Click for details" style="cursor:pointer"><td style="width:190px;min-width:190px;padding:5px 10px;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);vertical-align:middle;position:sticky;left:28px;z-index:9;background:var(--bg)"><span style="font-size:12px;font-weight:500;display:block;margin-bottom:3px">Radar Solutions (×9 products)</span><span class="badge badge-major">Major</span></td><td style="vertical-align:middle;border-bottom:0.5px solid var(--border);padding:0"><svg width="900" height="38" style="display:block"><line x1="0" y1="0" x2="0" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="120" y1="0" x2="120" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="236" y1="0" x2="236" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="355" y1="0" x2="355" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="475" y1="0" x2="475" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="591" y1="0" x2="591" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="711" y1="0" x2="711" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="827" y1="0" x2="827" y2="38" stroke="var(--border)" stroke-width="0.5"></line><line x1="186" y1="0" x2="186" y2="38" stroke="#E24B4A" stroke-width="1" opacity=".3"></line></svg></td></tr></tbody></table></div></div>
+  <div class="legend" id="gantt-legend"><span class="leg-item"><svg width="14" height="14"><polygon points="7,13 1,2 13,2" fill="#888780" opacity=".85"></polygon></svg>Proving Ground</span><span class="leg-item"><svg width="14" height="14"><polygon points="7,1 13,7 7,13 1,7" fill="#0077A8" opacity=".85"></polygon></svg>Pilot</span><span class="leg-item"><svg width="14" height="14"><rect x="1" y="3" width="12" height="8" rx="2" fill="#01ADFF" opacity=".85"></rect></svg>iPA</span><span class="leg-item"><svg width="14" height="14"><polygon points="7,1 8.3,5 12,5 9,7.5 10.2,11.5 7,9 3.8,11.5 5,7.5 2,5 5.7,5" fill="#a0b000" stroke="#7a8800" stroke-width="0.5"></polygon></svg>Training</span><span class="leg-item"><svg width="14" height="14"><rect x="1" y="3" width="12" height="8" rx="2" fill="#0077A8" opacity=".85"></rect></svg>PA</span><span class="leg-item"><svg width="14" height="14"><rect x="1" y="3" width="12" height="8" rx="2" fill="#04D0E6" opacity=".85"></rect></svg>PR</span><span class="leg-item"><svg width="14" height="14"><line x1="7" y1="1" x2="7" y2="13" stroke="#E24B4A" stroke-width="1.5" stroke-dasharray="3 2"></line></svg>Today</span><span style="margin-left:auto;font-size:11px;color:var(--text3)">Click any row to edit</span></div>
+</div>
+
+<div id="view-table" style="border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
+  <div style="overflow-x:auto"><table class="dt" id="data-table"></table></div>
+</div>
+
+<!-- Change log -->
+<div class="changelog" id="changelog-panel">
+  <h3>Recent changes in this session</h3>
+  <div id="changelog-entries"><div class="log-entry"><span class="log-time">09:30</span><span class="log-who">PMM</span><span><strong>Drill Hole Manager</strong> — iPA: "2026-08-01" → "2026-10-01" (+more)</span></div><div class="log-entry"><span class="log-time">09:27</span><span class="log-who">PMM</span><span><strong>IAS (Helios)</strong> — notes: "Brochure and datasheet completed. Overview deck to be completed by Jun 19. Sales enablement deck by end Jun." → "NPI - July 10-12 at Carlota."</span></div><div class="log-entry"><span class="log-time">14:39</span><span class="log-who">PMM</span><span><strong>IAS (Helios)</strong> — iPA: "2026-07-27" → "2026-08-27" (+more)</span></div><div class="log-entry"><span class="log-time">08:18</span><span class="log-who">PMM</span><span><strong>UG CAS</strong> — iPA: "2026-08-01" → "2026-09-15"</span></div><div class="log-entry"><span class="log-time">08:15</span><span class="log-who">PMM</span><span><strong>OP Pro / OAS HW</strong> — iPA: "2026-06-24" → "2026-07-07"</span></div><div class="log-entry"><span class="log-time">17:28</span><span class="log-who">PMM</span><span><strong>OP Tracker</strong> — iPA: "2026-07-08" → "2026-08-04" (+more)</span></div><div class="log-entry"><span class="log-time">17:27</span><span class="log-who">PMM</span><span><strong>UG CAS</strong> — Minor update</span></div><div class="log-entry"><span class="log-time">17:23</span><span class="log-who">PMM</span><span><strong>Asset Health</strong> — Collateral plan updated</span></div><div class="log-entry"><span class="log-time">17:15</span><span class="log-who">PMM</span><span><strong>UG CAS</strong> — PA: "2026-09-30" → "—" (+more)</span></div><div class="log-entry"><span class="log-time">17:08</span><span class="log-who">PMM</span><span><strong>CAS Insights 5.0</strong> — Collateral plan updated</span></div></div>
+</div>
+
+<!-- Drawer -->
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <button class="close-btn" onclick="closeDrawer()">×</button>
+    <div id="drawer-head-content"><div style="margin-top:2px"><span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#01ADFF">Safety</span><div style="font-size:17px;font-weight:600;margin:3px 0 6px">OAS Web</div><span class="badge badge-minor">Minor</span></div></div>
+  </div>
+  <div class="drawer-body">
+    <div style="display:flex;gap:0;border-bottom:0.5px solid var(--border);margin-bottom:4px">
+      <button id="tab-btn-collateral" onclick="setTab(&#39;collateral&#39;)" style="padding: 7px 14px; font-size: 12px; font-weight: 500; border-top-width: medium; border-right-width: medium; border-left-width: medium; border-top-style: none; border-right-style: none; border-left-style: none; border-top-color: currentcolor; border-right-color: currentcolor; border-left-color: currentcolor; border-image: initial; background: none; cursor: pointer; font-family: var(--font); color: var(--hx-blue); border-bottom: 2px solid var(--hx-blue);">
+        Collateral plan
+      </button>
+      <button id="tab-btn-milestones" onclick="setTab(&#39;milestones&#39;)" style="padding: 7px 14px; font-size: 12px; font-weight: 500; border-width: medium medium 2px; border-style: none none solid; border-color: currentcolor currentcolor transparent; border-image: initial; background: none; cursor: pointer; font-family: var(--font); color: var(--text2);">
+        Milestones
+      </button>
+
+    </div>
+
+    <div id="tab-collateral" style="display: block;"><p class="sec-title">Collateral by stage</p><div class="stage-card"><div class="stage-card-head" onclick="toggleStageCard(this)" style="border-left:3px solid #01ADFF"><span style="font-size:11px;font-weight:600;color:#01ADFF">iPA</span> <span style="font-size:11px;color:var(--text3);margin-left:4px">0 items</span><span class="stage-chevron">▼</span></div><div class="stage-card-body open"><p style="font-size:10px;color:var(--text3);margin-bottom:6px;font-style:italic">Internal product announcement</p><p style="font-size:12px;color:var(--text3);font-style:italic;padding:6px 0">No collateral planned for this stage</p></div></div><div class="stage-card"><div class="stage-card-head" onclick="toggleStageCard(this)" style="border-left:3px solid #04D0E6"><span style="font-size:11px;font-weight:600;color:#04D0E6">PR</span><span style="font-size:11px;color:var(--text2)">30 Jun 26</span> <span class="status s-upcoming">Upcoming</span><span style="font-size:11px;color:var(--text3);margin-left:4px">2 items</span><span class="stage-chevron">▼</span></div><div class="stage-card-body"><p style="font-size:10px;color:var(--text3);margin-bottom:6px;font-style:italic">Product release</p><div class="coll-item"><span class="coll-dot" style="background:#04D0E6"></span><span style="flex:1">Overview deck</span><span class="coll-link" style="color:var(--text3);cursor:pointer" onclick="addLink(4,&#39;PR&#39;," overview="" deck")"="">+ link</span></div><div class="coll-item"><span class="coll-dot" style="background:#04D0E6"></span><span style="flex:1">Sales enablement deck</span><span class="coll-link" style="color:var(--text3);cursor:pointer" onclick="addLink(4,&#39;PR&#39;," sales="" enablement="" deck")"="">+ link</span></div></div></div><button class="sec-btn" onclick="copyCollateral(4)">Copy all collateral list</button></div>
+    <div id="tab-milestones" style="display: none;"><p class="sec-title">Timeline milestones</p><div class="milestone-row"><div style="display:flex;align-items:center;gap:8px"><span class="m-dot" style="background:#888780"></span><span style="font-size:12px;font-weight:500">Proving Ground</span></div><div style="display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:var(--text2)">6 Jul 26</span><span class="status s-open">Open</span></div></div><div class="milestone-row"><div style="display:flex;align-items:center;gap:8px"><span class="m-dot" style="background:#0077A8"></span><span style="font-size:12px;font-weight:500">Pilot</span></div><div style="display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:var(--text2)">3 Aug 26</span><span class="status s-open">Open</span></div></div><div class="milestone-row"><div style="display:flex;align-items:center;gap:8px"><span class="m-dot" style="background:#01ADFF"></span><span style="font-size:12px;font-weight:500">iPA</span></div><div style="display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:var(--text2)">4 Aug 26</span><span class="status s-upcoming">Upcoming</span></div></div><div class="milestone-row"><div style="display:flex;align-items:center;gap:8px"><span class="m-dot" style="background:#0077A8"></span><span style="font-size:12px;font-weight:500">PA</span></div><div style="display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:var(--text2)">—</span><span class="status s-planned">Planned</span></div></div><div class="milestone-row"><div style="display:flex;align-items:center;gap:8px"><span class="m-dot" style="background:#04D0E6"></span><span style="font-size:12px;font-weight:500">PR</span></div><div style="display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:var(--text2)">25 Sept 26</span><span class="status s-planned">Planned</span></div></div><p class="sec-title" style="margin-top:18px">Training sessions</p><div class="training-block" style="margin-bottom:8px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <p style="font-size:11px;font-weight:600;color:#5a6600;margin:0">★ Sales training PRE-RECORDED with FAQ</p>
+        </div>
+        <div style="display:grid;gap:5px">
+          <div style="display:flex;gap:8px;font-size:12px"><span style="color:#7a8800;font-weight:500;width:80px">Date</span><span style="color:var(--text2)">—</span></div>
+          <div style="display:flex;gap:8px;font-size:12px"><span style="color:#7a8800;font-weight:500;width:80px">Audience</span><span style="color:var(--text2)">Global sales team</span></div>
+          <div style="display:flex;gap:8px;font-size:12px"><span style="color:#7a8800;font-weight:500;width:80px">Materials</span><span style="color:var(--text2)">Sales enablement deck — available from iPA (4 Aug 26)</span></div>
+          
+        </div>
+      </div></div>
+    <button class="edit-btn" onclick="openEditModal(currentDrawerId)">Edit dates &amp; collateral</button>
+  </div>
+</div>
+
+<!-- Edit modal -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal-content">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h3 style="font-size:15px;font-weight:600;margin:0">Edit: Drill Hole Manager</h3>
+      <button onclick="closeModal()" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--text2);line-height:1">×</button>
+    </div>
+    <div class="field-row" style="margin-bottom:10px">
+      <div class="field-group" style="margin-bottom:0"><label>Product name</label><input id="e-product" value="Drill Hole Manager"></div>
+      <div class="field-group" style="margin-bottom:0"><label>Type</label><select id="e-type"><option>Mega</option><option selected="">Major</option><option>Minor</option></select></div>
+    </div>
+    <hr style="border:none;border-top:0.5px solid var(--border);margin:12px 0">
+    <p style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin-bottom:10px">Dates &amp; statuses</p>
+    <div class="field-row" style="margin-bottom:8px"><div class="field-group" style="margin-bottom:0"><label>Proving Ground (YYYY-MM-DD)</label><input id="e-pg" value="" placeholder="e.g. 2026-07-20"></div><div class="field-group" style="margin-bottom:0"><label>Status</label><select id="e-pgStatus"><option value="">— none —</option><option value="done">done</option><option value="in-progress">in-progress</option><option value="upcoming">upcoming</option><option value="planned">planned</option><option value="open">open</option></select></div></div><div class="field-row" style="margin-bottom:8px"><div class="field-group" style="margin-bottom:0"><label>Pilot (YYYY-MM-DD)</label><input id="e-pilot" value="" placeholder="e.g. 2026-07-20"></div><div class="field-group" style="margin-bottom:0"><label>Status</label><select id="e-pilotStatus"><option value="">— none —</option><option value="done">done</option><option value="in-progress">in-progress</option><option value="upcoming">upcoming</option><option value="planned">planned</option><option value="open">open</option></select></div></div><div class="field-row" style="margin-bottom:8px"><div class="field-group" style="margin-bottom:0"><label>iPA (YYYY-MM-DD)</label><input id="e-iPA" value="2026-08-01" placeholder="e.g. 2026-07-20"></div><div class="field-group" style="margin-bottom:0"><label>Status</label><select id="e-ipaStatus"><option value="">— none —</option><option value="done">done</option><option value="in-progress">in-progress</option><option value="upcoming">upcoming</option><option value="planned" selected="">planned</option><option value="open">open</option></select></div></div><div class="field-group" style="margin-bottom:8px"><div class="field-group" style="margin-bottom:0"><label>Training date (YYYY-MM-DD)</label><input id="e-training" value="" placeholder="e.g. 2026-07-20"></div></div><div class="field-row" style="margin-bottom:8px"><div class="field-group" style="margin-bottom:0"><label>PA (YYYY-MM-DD)</label><input id="e-PA" value="2026-10-01" placeholder="e.g. 2026-07-20"></div><div class="field-group" style="margin-bottom:0"><label>Status</label><select id="e-paStatus"><option value="">— none —</option><option value="done">done</option><option value="in-progress">in-progress</option><option value="upcoming">upcoming</option><option value="planned" selected="">planned</option><option value="open">open</option></select></div></div><div class="field-row" style="margin-bottom:8px"><div class="field-group" style="margin-bottom:0"><label>PR (YYYY-MM-DD)</label><input id="e-PR" value="2026-11-11" placeholder="e.g. 2026-07-20"></div><div class="field-group" style="margin-bottom:0"><label>Status</label><select id="e-prStatus"><option value="">— none —</option><option value="done">done</option><option value="in-progress">in-progress</option><option value="upcoming">upcoming</option><option value="planned" selected="">planned</option><option value="open">open</option></select></div></div>
+    <div class="field-group"><label style="color:#7a8800;font-weight:500">★ Training sessions (one per line: Name | YYYY-MM-DD | Audience | Materials)</label><textarea id="e-trainings" rows="4" placeholder="e.g. Product Webinar | 2026-09-16 | Global sales team | Sales enablement deck">--</textarea></div>
+    <hr style="border:none;border-top:0.5px solid var(--border);margin:12px 0">
+    <p style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin-bottom:10px">Collateral by stage (one item per line)</p>
+    <div class="field-group"><label style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:1px;background:#01ADFF;flex-shrink:0"></span>iPA</label><textarea id="e-coll-iPA" rows="3">Sales enablement deck</textarea></div><div class="field-group"><label style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:1px;background:#0077A8;flex-shrink:0"></span>PA</label><textarea id="e-coll-PA" rows="3">Product overview deck
+Brochure</textarea></div><div class="field-group"><label style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:1px;background:#04D0E6;flex-shrink:0"></span>PR</label><textarea id="e-coll-PR" rows="3"></textarea></div><div class="field-group"><label style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:1px;background:#3a5068;flex-shrink:0"></span>Post-launch</label><textarea id="e-coll-post" rows="3"></textarea></div>
+    <div class="field-group" style="background:#f7ffcc;border:0.5px solid #b8c400;border-radius:8px;padding:10px 12px;margin-top:4px"><label style="font-weight:600;color:#5a6600;margin-bottom:6px;display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:1px;background:#a0b000;flex-shrink:0"></span>Regional marketing &amp; campaign activities</label><label style="font-size:11px;color:#7a8800;margin-bottom:4px;display:block">One activity per line: Activity name | YYYY-MM-DD</label><textarea id="e-campaign-items" rows="5" placeholder="e.g. Regional launch campaign | 2026-10-15">Drillhole Manager Public Webinar | 2026-09-16</textarea><span style="font-size:10px;color:#7a8800;display:block;margin-top:4px">Each activity gets its own date — not tied to the PR date.</span></div>
+    <div class="field-group"><label>Notes</label><textarea id="e-notes" rows="3">iPA and PA dates TBC. PG/Pilot dates TBC with PM. Product Webinar: Sep 16.</textarea></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveEdit(10)">Save changes</button>
+    </div></div>
+</div>
+
+<div class="toast" id="toast">✓ Saved — Maxime notified</div>
+
+<script>
+// ── EmailJS config ──────────────────────────────────────────────
+// TO ACTIVATE: sign up free at emailjs.com, create a service + template,
+// then replace these three values. The template should use these variables:
+// {{to_email}}, {{from_name}}, {{product}}, {{pmm}}, {{changes}}, {{timestamp}}
+const EMAILJS_SERVICE_ID  = "YOUR_SERVICE_ID";   // e.g. "service_abc123"
+const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";  // e.g. "template_xyz789"
+const EMAILJS_PUBLIC_KEY  = "YOUR_PUBLIC_KEY";   // e.g. "abcDEFghi123"
+const NOTIFY_EMAIL        = "maxime.guillaumot@hexagon.com";
+
+emailjs.init(EMAILJS_PUBLIC_KEY);
+
+function sendNotification(pmm, productName, changes){
+  if(EMAILJS_SERVICE_ID==="YOUR_SERVICE_ID") return; // not yet configured
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    to_email:  NOTIFY_EMAIL,
+    from_name: pmm,
+    product:   productName,
+    pmm:       pmm,
+    changes:   changes,
+    timestamp: new Date().toLocaleString("en-GB",{dateStyle:"medium",timeStyle:"short"}),
+  }).catch(e=>console.warn("EmailJS error:",e));
+}
+
+// ── PMM session ────────────────────────────────────────────────
+let currentPMM = "PMM";
+const changeLog = [];
+
+// ── Data — loaded from embedded JSON, same structure as products.json ──
+let PRODUCTS = [
+  { id:2, portfolio:"Safety", product:"CAS 10.36", type:"Major",
+    pg:"2026-06-15", pilot:"2026-07-06", iPA:"2026-06-18", trainings:[], PA:"2026-06-22", PR:"2026-07-20",
+    pgStatus:"in-progress", pilotStatus:"open", ipaStatus:"upcoming", paStatus:"upcoming", prStatus:"upcoming",
+    collateralByStage:{iPA:["Updated sales enablement deck (CAS4\u2192CAS10 upgrade focus)"],PA:["Updated brochure","Updated datasheet","Updated overview deck (incl. VIS + PA + 4D radars)"],PR:["Safety campaign assets"],post:[],campaign:["Regional campaign \u2014 bundled with VIS launch"]},
+    campaignItems:[{name:"Regional campaign \u2014 bundled with VIS launch",date:"2026-07-20"}],
+    notes:"PG: Jun 15\u201326 (CAS/VIS). NPI Pilot at Venetia: Jul 6\u201319. Collateral refinement pending Messaging Framework approval." },
+  { id:1, portfolio:"Safety", product:"VIS Release", type:"Mega",
+    pg:"2026-06-15", pilot:"2026-07-06", iPA:"2026-06-11", trainings:[{name:"Global Sales Training",date:"2026-06-22"}], PA:"2026-06-22", PR:"2026-07-20",
+    pgStatus:"in-progress", pilotStatus:"open", ipaStatus:"upcoming", paStatus:"upcoming", prStatus:"upcoming",
+    collateralByStage:{iPA:["Sales enablement deck"],PA:["Brochure","Datasheet (VIS)","Datasheet (b-kit)","Overview deck"],PR:["Product overview video","Safety campaign assets"],post:["Technical deck","Product capability statement","Case study"],campaign:["Regional marketing campaign","Social media alignment","Email announcement to existing VIS customers"]},
+    campaignItems:[{name:"Regional marketing campaign",date:"2026-07-20"},{name:"Social media alignment",date:"2026-07-25"},{name:"Email announcement to existing VIS customers",date:"2026-07-28"}],
+    notes:"PG: Jun 15\u201326 (CAS/VIS). NPI Pilot at Venetia: Jul 6\u201319. Global sales training week of 22 Jun. Press release under review. Website update ongoing." },
+  { id:3, portfolio:"Safety", product:"CAS Insights 5.1", type:"Minor",
+    pg:"2026-06-16", pilot:"2026-07-07", iPA:"2026-06-29", trainings:[], PA:null, PR:"2026-08-17",
+    pgStatus:"in-progress", pilotStatus:"open", ipaStatus:"upcoming", paStatus:null, prStatus:"planned",
+    collateralByStage:{iPA:["Sales enablement deck (incl. MineEntreprise)","Product overview deck"],PA:[],PR:["Brochure","Data-privacy / related content"],post:[],campaign:[]},
+    campaignItems:[],
+    notes:"PG: Jun 16\u201329. NPI Pilot 5.1: Jul 7\u201328. Soft release to CAS customer base only." },
+  { id:12, portfolio:"Safety", product:"4D Radar", type:"Minor",
+    pg:null, pilot:null, iPA:null, trainings:[], PA:"2026-06-22", PR:"2026-07-20",
+    pgStatus:null, pilotStatus:null, ipaStatus:null, paStatus:"upcoming", prStatus:"upcoming",
+    collateralByStage:{iPA:[],PA:["Sales enablement deck","Brochure","Datasheet","Overview deck"],PR:[],post:[],campaign:[]},
+    campaignItems:[],
+    notes:"Previously deprioritised by PM. PM agreed to accelerate brief. Radar datasheet is standalone." },
+  { id:4, portfolio:"Safety", product:"OAS Web", type:"Minor",
+    pg:null, pilot:null, iPA:null, trainings:[], PA:null, PR:"2026-06-30",
+    pgStatus:null, pilotStatus:null, ipaStatus:null, paStatus:null, prStatus:"upcoming",
+    collateralByStage:{iPA:[],PA:[],PR:["Overview deck","Sales enablement deck"],post:[],campaign:[]},
+    campaignItems:[],
+    notes:"Minor release to existing customers." },
+  { id:6, portfolio:"Safety", product:"IAS (Helios)", type:"Minor",
+    pg:null, pilot:null, iPA:"2026-07-27", trainings:[], PA:"2026-08-31", PR:"2026-09-30",
+    pgStatus:null, pilotStatus:null, ipaStatus:"planned", paStatus:"planned", prStatus:"planned",
+    collateralByStage:{iPA:["Sales enablement deck","Overview deck"],PA:["Brochure","Product overview video","Datasheet"],PR:["Safety campaign assets"],post:["Technical deck","Product capability statement","Case study"],campaign:["Regional campaign \u2014 targeted customers only"]},
+    campaignItems:[{name:"Regional campaign \u2014 targeted customers only",date:"2026-10-14"}],
+    notes:"Brochure and datasheet completed. Overview deck to be completed by Jun 19. Sales enablement deck by end Jun." },
+  { id:5, portfolio:"Safety", product:"UG CAS", type:"Major",
+    pg:"2026-08-03", pilot:"2026-09-09", iPA:"2026-08-01", trainings:[], PA:"2026-09-30", PR:"2026-10-26",
+    pgStatus:"open", pilotStatus:"open", ipaStatus:"planned", paStatus:"planned", prStatus:"planned",
+    collateralByStage:{iPA:["Messaging framework","Sales enablement deck","Overview deck"],PA:["Brochure","Product overview video","Datasheet"],PR:["Safety campaign assets"],post:["Technical deck","Product capability statement","Case study"],campaign:["Regional campaign \u2014 post PR","Potential early press release Aug (check JD & Dave)"]},
+    campaignItems:[{name:"Regional campaign \u2014 post PR",date:"2026-11-03"},{name:"Potential early press release Aug",date:"2026-08-15"}],
+    notes:"PG at Krolpa: Aug 3\u201314. NPI Pilot at Goldfield: Sep 9\u201322. Potential early press release August \u2014 check with JD and Dave." },
+  { id:13, portfolio:"Safety", product:"Antenna Mast", type:"Minor",
+    pg:null, pilot:null, iPA:null, trainings:[], PA:null, PR:"2026-09-30",
+    pgStatus:null, pilotStatus:null, ipaStatus:null, paStatus:null, prStatus:"planned",
+    collateralByStage:{iPA:[],PA:[],PR:["Brochure","Datasheet","Overview deck"],post:[],campaign:[]},
+    campaignItems:[],
+    notes:"Pending PM alignment." },
+  { id:7, portfolio:"Operations", product:"Asset Health", type:"Major",
+    pg:null, pilot:null, iPA:null, trainings:[], PA:"2026-06-29", PR:"2026-06-29",
+    pgStatus:null, pilotStatus:null, ipaStatus:null, paStatus:"upcoming", prStatus:"upcoming",
+    collateralByStage:{iPA:[],PA:["Internal sales training"],PR:[],post:[],campaign:[]},
+    campaignItems:[],
+    notes:"PA and PR: 29 Jun. Most content pre-built. Skip iPA \u2014 go straight to PA. Internal webinar TBC." },
+  { id:8, portfolio:"Operations", product:"OP Pro / OAS HW", type:"Major",
+    pg:"2026-05-25", pilot:"2026-06-29", iPA:"2026-06-19", trainings:[], PA:null, PR:"2026-07-17",
+    pgStatus:"done", pilotStatus:"open", ipaStatus:"upcoming", paStatus:null, prStatus:"upcoming",
+    collateralByStage:{iPA:["Sales enablement deck","Overview deck"],PA:[],PR:["Brochure","Datasheet","Product overview video"],post:["Case study","Broad operations portfolio campaign"],campaign:["Ops portfolio campaign \u2014 post PR"]},
+    campaignItems:[{name:"Ops portfolio campaign \u2014 post PR",date:"2026-07-31"}],
+    notes:"PG (Codelco): May 25\u2013Jun 26. Pilot results: Jun 29\u2013Jul 3." },
+  { id:9, portfolio:"Operations", product:"OP Tracker", type:"Mega",
+    pg:"2026-07-06", pilot:"2026-08-03", iPA:"2026-06-26", trainings:[], PA:"2026-08-15", PR:"2026-09-25",
+    pgStatus:"open", pilotStatus:"open", ipaStatus:"upcoming", paStatus:"planned", prStatus:"planned",
+    collateralByStage:{iPA:["Sales enablement deck","Overview deck"],PA:["Brochure","Product overview video","Datasheet"],PR:["Product technical deck"],post:["Case study"],campaign:["Regional campaign \u2014 post PR"]},
+    campaignItems:[{name:"Regional campaign \u2014 post PR",date:"2026-10-09"}],
+    notes:"PG: Jul 6\u201324. NPI Pilot: Aug 3\u201328. PM needs to fill brief form for CMFramework." },
+  { id:10, portfolio:"Resource Opt.", product:"Drill Hole Manager", type:"Major",
+    pg:null, pilot:null, iPA:"2026-08-01", trainings:[{name:"Customer Marketing Webinar",date:"2026-09-16"}], PA:"2026-10-01", PR:"2026-11-11",
+    pgStatus:null, pilotStatus:null, ipaStatus:"planned", paStatus:"planned", prStatus:"planned",
+    collateralByStage:{iPA:["Sales enablement deck"],PA:["Product overview deck","Brochure"],PR:[],post:[],campaign:[]},
+    campaignItems:[],
+    notes:"iPA and PA dates TBC. PG/Pilot dates TBC with PM. Product Webinar: Sep 16." },
+  { id:11, portfolio:"Resource Opt.", product:"Radar Solutions (\xd79 products)", type:"Major",
+    pg:null, pilot:null, iPA:null, trainings:[], PA:null, PR:null,
+    pgStatus:null, pilotStatus:null, ipaStatus:null, paStatus:null, prStatus:"planned",
+    collateralByStage:{iPA:[],PA:[],PR:["6 collaterals per product \xd7 9 products (brochures, datasheets, overview decks, etc.)"],post:[],campaign:["Comms and training on belt & crusher soon; fill and bulk inventory campaigns end Jul"]},
+    campaignItems:[{name:"Belt & crusher comms/training",date:"2026-07-15"},{name:"Fill and bulk inventory campaigns",date:"2026-07-31"}],
+    notes:"Jun\u2013Dec 2026. No PR event. Core collateral build across 9 products." },
+];
+
+// ── Version stamp: bump this whenever the embedded data structure changes ──
+// This forces a cache reset so old localStorage never overrides new file updates.
+const DATA_VERSION = "2026-06-13-v1";
+
+// Only these fields are ever restored from localStorage (user edits).
+// Structure, order, product names, portfolios always come from the embedded data above.
+const USER_EDITABLE_FIELDS = [
+  "pg","pilot","iPA","PA","PR",
+  "pgStatus","pilotStatus","ipaStatus","paStatus","prStatus",
+  "notes","trainings","campaignItems","collateralByStage"
+];
+
+function persistData(){
+  localStorage.setItem("pmm_products_v1", JSON.stringify({
+    version: DATA_VERSION,
+    lastUpdated: new Date().toISOString(),
+    lastUpdatedBy: currentPMM,
+    products: PRODUCTS
+  }));
+}
+
+// Restore user edits from localStorage, but NEVER let cached data override:
+//   - product order (always from embedded array)
+//   - structural fields like portfolio, product name, type
+//   - any field not in USER_EDITABLE_FIELDS
+// If the version stamp doesn't match, wipe the cache and start fresh.
+(function(){
+  try {
+    const raw = localStorage.getItem("pmm_products_v1");
+    if (!raw) return;
+    const stored = JSON.parse(raw);
+    if (stored.version !== DATA_VERSION) {
+      localStorage.removeItem("pmm_products_v1");
+      return;
+    }
+    if (!stored.products || !stored.products.length) return;
+    const byId = {};
+    stored.products.forEach(p => byId[p.id] = p);
+    PRODUCTS = PRODUCTS.map(embedded => {
+      const saved = byId[embedded.id];
+      if (!saved) return embedded;
+      const merged = { ...embedded };
+      USER_EDITABLE_FIELDS.forEach(f => { if (saved[f] !== undefined) merged[f] = saved[f]; });
+      return merged;
+    });
+  } catch(e) {
+    localStorage.removeItem("pmm_products_v1");
+  }
+})();
+
+// ── CONFIG ──────────────────────────────────────────────────────
+const PORT_COLORS={"Safety":"#01ADFF","Operations":"#04D0E6","Resource Opt.":"#0077A8"};
+const MILESTONES=[
+  {key:"pg",label:"Proving Ground",color:"#888780",shape:"triangle"},
+  {key:"pilot",label:"Pilot",color:"#0077A8",shape:"diamond"},
+  {key:"iPA",label:"iPA",color:"#01ADFF",shape:"bar"},
+  {key:"training",label:"Training",color:"#a0b000",shape:"star"},
+  {key:"PA",label:"PA",color:"#0077A8",shape:"bar"},
+  {key:"PR",label:"PR",color:"#04D0E6",shape:"bar"},
+];
+const STAGE_META={
+  iPA:{label:"iPA — Internal product announcement",color:"#01ADFF",bg:"#e0f4ff"},
+  PA:{label:"PA — Public announcement",color:"#0077A8",bg:"#e0f0fa"},
+  PR:{label:"PR — Product release",color:"#04D0E6",bg:"#e0fcff"},
+  post:{label:"Post-launch",color:"#3a5068",bg:"#f0f4f8"},
+  campaign:{label:"Regional marketing & campaigns",color:"#a0b000",bg:"#f7ffcc"},
+};
+const MSTATUS={done:{cls:"s-done",label:"Done"},"in-progress":{cls:"s-in-progress",label:"In Progress"},upcoming:{cls:"s-upcoming",label:"Upcoming"},planned:{cls:"s-planned",label:"Planned"},open:{cls:"s-open",label:"Open"}};
+const MSTATUS_KEYS={pg:"pgStatus",pilot:"pilotStatus",iPA:"ipaStatus",PA:"paStatus",PR:"prStatus"};
+const PORTFOLIOS=["All","Safety","Operations","Resource Opt."];
+const TL_START=new Date("2026-05-01");
+const TL_END=new Date("2026-12-20");
+const TOTAL_DAYS=(TL_END-TL_START)/86400000;
+const GANTT_PX=900,ROW_H=38,PORT_W=28,LABEL_W=190;
+let activePort="All",visMS=new Set(["pg","pilot","iPA","training","PA","PR"]),currentView="gantt",currentDrawerId=null,currentTab="collateral";
+
+function px(d){if(!d)return null;return Math.round((new Date(d+"T00:00:00")-TL_START)/86400000*(GANTT_PX/TOTAL_DAYS));}
+function todayPx(){return Math.round((new Date()-TL_START)/86400000*(GANTT_PX/TOTAL_DAYS));}
+function fmt(s){if(!s)return"—";return new Date(s+"T00:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"2-digit"});}
+function badge(t){const c=t==="Mega"?"badge-mega":t==="Major"?"badge-major":"badge-minor";return`<span class="badge ${c}">${t}</span>`;}
+function sbadge(s){if(!s)return"";const m=MSTATUS[s]||MSTATUS.open;return`<span class="status ${m.cls}">${m.label}</span>`;}
+function filtered(){return activePort==="All"?PRODUCTS:PRODUCTS.filter(p=>p.portfolio===activePort);}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2500);}
+function collateralFlat(p){const s=p.collateralByStage||{};return[...(s.iPA||[]),(s.PA||[]),(s.PR||[]),(s.post||[]),(s.campaign||[])].flat();}
+function itemLabel(c){return typeof c==="object"?c.text:c;}
+function itemUrl(c){return typeof c==="object"?c.url:null;}
+
+function renderStats(){
+  const ps=filtered();
+  const total=ps.reduce((a,p)=>a+collateralFlat(p).length,0);
+  const active=ps.filter(p=>["upcoming","in-progress"].includes(p.ipaStatus)||["upcoming","in-progress"].includes(p.paStatus)||["upcoming","in-progress"].includes(p.prStatus)).length;
+  const t=new Date(),m=t.getMonth(),y=t.getFullYear();
+  const soon=ps.filter(p=>[p.iPA,p.PA,p.PR].some(d=>{if(!d)return false;const dd=new Date(d+"T00:00:00");return dd.getMonth()===m&&dd.getFullYear()===y;})).length;
+  document.getElementById("stats-row").innerHTML=
+    `<div class="stat"><div class="lbl">Products tracked</div><div class="val">${ps.length}</div></div>
+     <div class="stat"><div class="lbl">Collateral items</div><div class="val">${total}</div></div>
+     <div class="stat"><div class="lbl">Active / upcoming</div><div class="val">${active}</div></div>
+     <div class="stat"><div class="lbl">Launches this month</div><div class="val">${soon}</div></div>`;
+}
+function renderPills(){
+  document.getElementById("port-pills").innerHTML=PORTFOLIOS.map(p=>
+    `<button class="pill${p===activePort?" active":""}" onclick="setPortfolio('${p}')">${p}</button>`).join("");
+}
+function renderToggles(){
+  document.getElementById("m-toggles").innerHTML=MILESTONES.map(m=>{
+    const on=visMS.has(m.key);
+    let shp="";
+    if(m.shape==="triangle")shp=`<svg width="12" height="12" style="flex-shrink:0"><polygon points="6,11 1,2 11,2" fill="${on?m.color:"var(--text3)"}"/></svg>`;
+    if(m.shape==="diamond")shp=`<svg width="12" height="12" style="flex-shrink:0"><polygon points="6,1 11,6 6,11 1,6" fill="${on?m.color:"var(--text3)"}"/></svg>`;
+    if(m.shape==="bar")shp=`<svg width="12" height="12" style="flex-shrink:0"><rect x="1" y="3" width="10" height="6" rx="2" fill="${on?m.color:"var(--text3)"}"/></svg>`;
+    if(m.shape==="star")shp=`<svg width="12" height="12" style="flex-shrink:0"><polygon points="6,1 7.2,4.3 10.8,4.3 8,6.5 9,10 6,8 3,10 4,6.5 1.2,4.3 4.8,4.3" fill="${on?m.color:"var(--text3)"}" stroke="${on?"#7a8800":"none"}" stroke-width="0.5"/></svg>`;
+    return`<button class="tog" onclick="toggleMS('${m.key}')"
+      style="border:0.5px solid ${on?m.color:"var(--border2)"};color:${on?m.color:"var(--text3)"};background:${on?m.color+"22":"none"};opacity:${on?1:.5}">
+      ${shp}${m.label}</button>`;
+  }).join("");
+}
+
+function renderGantt(){
+  const ps=filtered();const dw=GANTT_PX/TOTAL_DAYS;
+  const groups=[];const seen={};
+  ps.forEach(p=>{if(!seen[p.portfolio]){seen[p.portfolio]=[];groups.push({name:p.portfolio,rows:seen[p.portfolio]});}seen[p.portfolio].push(p);});
+  let months=[];let d=new Date(TL_START);d.setDate(1);
+  while(d<=TL_END){months.push(new Date(d));d.setMonth(d.getMonth()+1);}
+  const tx=todayPx();
+  let svgH=`<svg width="${GANTT_PX}" height="28" style="display:block">`;
+  months.forEach(m=>{const x=Math.round((m-TL_START)/86400000*dw);svgH+=`<line x1="${x}" y1="0" x2="${x}" y2="28" stroke="var(--border)" stroke-width="0.5"/><text x="${x+4}" y="19" font-size="10" fill="var(--text2)" font-family="Inter,sans-serif">${m.toLocaleDateString("en-GB",{month:"short",year:"2-digit"})}</text>`;});
+  svgH+=`<line x1="${tx}" y1="0" x2="${tx}" y2="28" stroke="#E24B4A" stroke-width="1.5" stroke-dasharray="3 2"/><text x="${tx+3}" y="10" font-size="9" fill="#E24B4A" font-family="Inter,sans-serif">Today</text></svg>`;
+  let html=`<table style="width:100%;border-collapse:collapse;">`;
+  html+=`<tr style="background:var(--bg2)"><th style="width:${PORT_W}px;min-width:${PORT_W}px;border-bottom:0.5px solid var(--border2);border-right:0.5px solid var(--border);padding:0"></th><th style="width:${LABEL_W}px;min-width:${LABEL_W}px;padding:6px 10px;font-size:11px;font-weight:500;color:var(--text2);text-align:left;border-bottom:0.5px solid var(--border2);border-right:0.5px solid var(--border);position:sticky;left:${PORT_W}px;z-index:10;background:var(--bg2)">Product</th><th style="border-bottom:0.5px solid var(--border2);padding:0;font-weight:normal">${svgH}</th></tr>`;
+  groups.forEach(g=>{
+    const pc=PORT_COLORS[g.name]||"#888";
+    g.rows.forEach((p,ri)=>{
+      const portCell=ri===0?`<td rowspan="${g.rows.length}" style="width:${PORT_W}px;min-width:${PORT_W}px;border-bottom:0.5px solid var(--border2);border-right:0.5px solid var(--border);background:${pc};padding:0;vertical-align:middle;text-align:center;"><span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#fff;opacity:.95;white-space:nowrap;display:block">${g.name}</span></td>`:"";
+      let svg=`<svg width="${GANTT_PX}" height="${ROW_H}" style="display:block">`;
+      months.forEach(m=>{const x=Math.round((m-TL_START)/86400000*dw);svg+=`<line x1="${x}" y1="0" x2="${x}" y2="${ROW_H}" stroke="var(--border)" stroke-width="0.5"/>`;});
+      svg+=`<line x1="${tx}" y1="0" x2="${tx}" y2="${ROW_H}" stroke="#E24B4A" stroke-width="1" opacity=".3"/>`;
+      if(visMS.has("pg")&&p.pg){const x=px(p.pg),cy=ROW_H/2;svg+=`<polygon points="${x},${cy+8} ${x-6},${cy-6} ${x+6},${cy-6}" fill="#888780" opacity=".85"/>`;}
+      if(visMS.has("pilot")&&p.pilot){const x=px(p.pilot),cy=ROW_H/2;svg+=`<polygon points="${x},${cy-9} ${x+7},${cy} ${x},${cy+9} ${x-7},${cy}" fill="#0077A8" opacity=".85"/>`;}
+      if(visMS.has("iPA")&&p.iPA){const x1=px(p.iPA),x2=p.PA?px(p.PA):p.PR?px(p.PR):x1+22,w=Math.max(10,x2-x1);svg+=`<rect x="${x1}" y="6" width="${w}" height="${ROW_H-12}" rx="3" fill="#01ADFF" opacity=".15"/><rect x="${x1}" y="8" width="5" height="${ROW_H-16}" rx="2" fill="#01ADFF" opacity=".9"/>`;if(w>22)svg+=`<text x="${x1+9}" y="${ROW_H/2+1}" font-size="9" fill="#01ADFF" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">iPA</text>`;}
+      if(visMS.has("PA")&&p.PA){const x1=px(p.PA),x2=p.PR?px(p.PR):x1+22,w=Math.max(10,x2-x1);svg+=`<rect x="${x1}" y="6" width="${w}" height="${ROW_H-12}" rx="3" fill="#0077A8" opacity=".15"/><rect x="${x1}" y="8" width="5" height="${ROW_H-16}" rx="2" fill="#0077A8" opacity=".9"/>`;if(w>22)svg+=`<text x="${x1+9}" y="${ROW_H/2+1}" font-size="9" fill="#0077A8" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">PA</text>`;}
+      if(visMS.has("PR")&&p.PR){const x=px(p.PR);svg+=`<rect x="${x}" y="7" width="16" height="${ROW_H-14}" rx="3" fill="#04D0E6" opacity=".9"/><text x="${x+3}" y="${ROW_H/2+1}" font-size="8" fill="#fff" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">PR</text>`;}
+      if(visMS.has("training")&&p.trainings&&p.trainings.length&&p.id!==10){p.trainings.forEach((t,ti)=>{if(!t.date)return;const x=px(t.date)+(ti*11),cy=ROW_H/2,r=8;const pts=Array.from({length:10},(_,i)=>{const angle=Math.PI/5*i-Math.PI/2;const rad=i%2===0?r:r*0.42;return`${(x+rad*Math.cos(angle)).toFixed(1)},${(cy+rad*Math.sin(angle)).toFixed(1)}`;}).join(" ");svg+=`<polygon points="${pts}" fill="#DFF73F" stroke="#7a8800" stroke-width="0.8"><title>${t.name||"Training"}</title></polygon>`;});}
+      svg+=`</svg>`;
+      html+=`<tr onclick="openDrawer(${p.id})" title="Click for details" style="cursor:pointer">${portCell}<td style="width:${LABEL_W}px;min-width:${LABEL_W}px;padding:5px 10px;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);vertical-align:middle;position:sticky;left:${PORT_W}px;z-index:9;background:var(--bg)"><span style="font-size:12px;font-weight:500;display:block;margin-bottom:3px">${p.product}</span>${badge(p.type)}</td><td style="vertical-align:middle;border-bottom:0.5px solid var(--border);padding:0">${svg}</td></tr>`;
+    });
+  });
+  html+=`</table>`;
+  document.getElementById("gantt-table").innerHTML=html;
+  document.getElementById("gantt-legend").innerHTML=MILESTONES.map(m=>{let shp="";if(m.shape==="triangle")shp=`<svg width="14" height="14"><polygon points="7,13 1,2 13,2" fill="${m.color}" opacity=".85"/></svg>`;if(m.shape==="diamond")shp=`<svg width="14" height="14"><polygon points="7,1 13,7 7,13 1,7" fill="${m.color}" opacity=".85"/></svg>`;if(m.shape==="bar")shp=`<svg width="14" height="14"><rect x="1" y="3" width="12" height="8" rx="2" fill="${m.color}" opacity=".85"/></svg>`;if(m.shape==="star")shp=`<svg width="14" height="14"><polygon points="7,1 8.3,5 12,5 9,7.5 10.2,11.5 7,9 3.8,11.5 5,7.5 2,5 5.7,5" fill="${m.color}" stroke="#7a8800" stroke-width="0.5"/></svg>`;return`<span class="leg-item">${shp}${m.label}</span>`;}).join("")+`<span class="leg-item"><svg width="14" height="14"><line x1="7" y1="1" x2="7" y2="13" stroke="#E24B4A" stroke-width="1.5" stroke-dasharray="3 2"/></svg>Today</span><span style="margin-left:auto;font-size:11px;color:var(--text3)">Click any row to edit</span>`;
+}
+
+function renderTable(){
+  const ps=filtered();const groups=[];const seen={};
+  ps.forEach(p=>{if(!seen[p.portfolio]){seen[p.portfolio]=[];groups.push({name:p.portfolio,rows:seen[p.portfolio]});}seen[p.portfolio].push(p);});
+  let html=`<thead><tr><th>Product</th><th>Type</th><th>PG</th><th>Pilot</th><th>iPA</th><th>PA</th><th>Training</th><th>PR</th><th>Collateral</th></tr></thead><tbody>`;
+  groups.forEach(g=>{
+    const pc=PORT_COLORS[g.name]||"#888";
+    html+=`<tr><td colspan="9" style="padding:8px 12px 4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:${pc};background:${pc}18;border-bottom:0.5px solid var(--border)">${g.name}</td></tr>`;
+    g.rows.forEach(p=>{const total=collateralFlat(p).length;
+      html+=`<tr onclick="openDrawer(${p.id})" style="cursor:pointer"><td style="font-weight:500">${p.product}</td><td>${badge(p.type)}</td><td><div style="font-size:11px">${fmt(p.pg)}</div>${sbadge(p.pgStatus)}</td><td><div style="font-size:11px">${fmt(p.pilot)}</div>${sbadge(p.pilotStatus)}</td><td><div style="font-size:11px">${fmt(p.iPA)}</div>${sbadge(p.ipaStatus)}</td><td><div style="font-size:11px">${fmt(p.PA)}</div>${sbadge(p.paStatus)}</td><td><div style="font-size:11px;color:#7a8800;font-weight:500">${(p.trainings||[]).length?((p.trainings||[]).map(t=>`★ ${t.name||"Training"}${t.date?" ("+fmt(t.date)+")":""}`).join("<br>")):"—"}</div></td><td><div style="font-size:11px">${fmt(p.PR)}</div>${sbadge(p.prStatus)}</td><td style="color:var(--text2);font-size:11px">${total} items</td></tr>`;
+    });
+  });
+  html+=`</tbody>`;
+  document.getElementById("data-table").innerHTML=html;
+}
+
+function openDrawer(id){
+  const p=PRODUCTS.find(x=>x.id===id);if(!p)return;
+  currentDrawerId=id;
+  const pc=PORT_COLORS[p.portfolio]||"#888";
+  document.getElementById("drawer-head-content").innerHTML=`<div style="margin-top:2px"><span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:${pc}">${p.portfolio}</span><div style="font-size:17px;font-weight:600;margin:3px 0 6px">${p.product}</div>${badge(p.type)}</div>`;
+  setTab(currentTab);
+  document.getElementById("overlay").classList.add("open");
+  document.getElementById("drawer").classList.add("open");
+}
+function closeDrawer(){document.getElementById("overlay").classList.remove("open");document.getElementById("drawer").classList.remove("open");}
+function setTab(tab){
+  currentTab=tab;
+  ["collateral","milestones"].forEach(t=>{
+    const el=document.getElementById("tab-"+t); if(el) el.style.display=t===tab?"block":"none";
+    const btn=document.getElementById("tab-btn-"+t);
+    if(btn){btn.style.color=t===tab?"var(--hx-blue)":"var(--text2)";btn.style.borderBottom=t===tab?"2px solid var(--hx-blue)":"2px solid transparent";}
+  });
+  const p=PRODUCTS.find(x=>x.id===currentDrawerId);if(!p)return;
+  if(tab==="collateral")renderTabCollateral(p);
+  if(tab==="milestones")renderTabMilestones(p);
+}
+function renderTabCollateral(p){
+  const bs=p.collateralByStage||{};
+  const stages=[
+    {key:"iPA",dateKey:"iPA",statusKey:"ipaStatus"},
+    {key:"PA",dateKey:"PA",statusKey:"paStatus"},
+    {key:"PR",dateKey:"PR",statusKey:"prStatus"},
+    {key:"post",dateKey:null,statusKey:null},
+    {key:"campaign",dateKey:null,statusKey:null}
+  ];
+  let html=`<p class="sec-title">Collateral by stage</p>`;
+  stages.forEach((s,si)=>{
+    const items=bs[s.key]||[];
+    if(items.length===0&&s.key!=="iPA")return;
+    const m=STAGE_META[s.key];
+    const date=s.dateKey?p[s.dateKey]:null;
+    const status=s.statusKey?p[s.statusKey]:null;
+    let itemsHTML;
+    if(s.key==="campaign"){
+      // Regional marketing: show each task with its own independent date
+      const campItems=p.campaignItems||[];
+      if(items.length===0&&campItems.length===0){
+        itemsHTML=`<p style="font-size:12px;color:var(--text3);font-style:italic;padding:6px 0">No campaign activities planned yet</p>`;
+      } else {
+        // Merge: campItems is the source of truth for dates; items are the labels
+        const allNames=items.map(c=>itemLabel(c));
+        itemsHTML=allNames.map(label=>{
+          const ci=campItems.find(x=>x.name===label);
+          const ciDate=ci&&ci.date?ci.date:"";
+          const url=itemUrl(items.find(c=>itemLabel(c)===label));
+          return`<div class="coll-item" style="align-items:center;gap:8px">
+            <span class="coll-dot" style="background:${m.color}"></span>
+            <span style="flex:1;font-size:12px">${label}</span>
+            <span style="font-size:11px;color:#7a8800;background:#f0f8d0;border:0.5px solid #b8c400;padding:1px 7px;border-radius:8px;flex-shrink:0;white-space:nowrap">${ciDate?fmt(ciDate):"Date TBC"}</span>
+            ${url?`<a href="${url}" target="_blank" class="coll-link">Open ↗</a>`:`<span class="coll-link" style="color:var(--text3);cursor:pointer" onclick="addLink(${p.id},'${s.key}',${JSON.stringify(label)})">+ link</span>`}
+          </div>`;
+        }).join("");
+        if(allNames.length===0&&campItems.length>0){
+          itemsHTML=campItems.map(ci=>`<div class="coll-item" style="align-items:center;gap:8px">
+            <span class="coll-dot" style="background:${m.color}"></span>
+            <span style="flex:1;font-size:12px">${ci.name}</span>
+            <span style="font-size:11px;color:#7a8800;background:#f0f8d0;border:0.5px solid #b8c400;padding:1px 7px;border-radius:8px;flex-shrink:0;white-space:nowrap">${ci.date?fmt(ci.date):"Date TBC"}</span>
+          </div>`).join("");
+        }
+      }
+    } else {
+      itemsHTML=items.length===0
+        ?`<p style="font-size:12px;color:var(--text3);font-style:italic;padding:6px 0">No collateral planned for this stage</p>`
+        :items.map(c=>{const label=itemLabel(c);const url=itemUrl(c);return`<div class="coll-item"><span class="coll-dot" style="background:${m.color}"></span><span style="flex:1">${label}</span>${url?`<a href="${url}" target="_blank" class="coll-link">Open ↗</a>`:`<span class="coll-link" style="color:var(--text3);cursor:pointer" onclick="addLink(${p.id},'${s.key}',${JSON.stringify(label)})">+ link</span>`}</div>`;}).join("");
+    }
+    const totalItems=s.key==="campaign"?(p.campaignItems||[]).length||items.length:items.length;
+    html+=`<div class="stage-card"><div class="stage-card-head" onclick="toggleStageCard(this)" style="border-left:3px solid ${m.color}"><span style="font-size:11px;font-weight:600;color:${m.color}">${m.label.split("—")[0].trim()}</span>${date?`<span style="font-size:11px;color:var(--text2)">${fmt(date)}</span>`:""} ${status?sbadge(status):""}<span style="font-size:11px;color:var(--text3);margin-left:4px">${totalItems} item${totalItems!==1?"s":""}</span><span class="stage-chevron">▼</span></div><div class="stage-card-body${si===0?" open":""}"><p style="font-size:10px;color:var(--text3);margin-bottom:6px;font-style:italic">${m.label.includes("—")?m.label.split("—")[1].trim():""}</p>${itemsHTML}</div></div>`;
+  });
+  html+=`<button class="sec-btn" onclick="copyCollateral(${p.id})">Copy all collateral list</button>`;
+  document.getElementById("tab-collateral").innerHTML=html;
+}
+
+function addLink(productId,stage,itemText){
+  const url=prompt(`Enter Product Hub URL for:\n"${itemText}"`);
+  if(!url||!url.startsWith("http"))return;
+  const idx=PRODUCTS.findIndex(x=>x.id===productId);if(idx===-1)return;
+  const items=PRODUCTS[idx].collateralByStage[stage]||[];
+  const iIdx=items.findIndex(c=>itemLabel(c)===itemText);
+  if(iIdx===-1)return;
+  items[iIdx]={text:itemText,url};
+  persistData();
+  renderTabCollateral(PRODUCTS[idx]);
+  toast("Link saved");
+}
+function toggleStageCard(head){const body=head.nextElementSibling;body.classList.toggle("open");head.querySelector(".stage-chevron").style.transform=body.classList.contains("open")?"rotate(180deg)":"";}
+function copyCollateral(id){const p=PRODUCTS.find(x=>x.id===id);if(!p)return;const bs=p.collateralByStage||{};const lines=[`${p.product} — Collateral plan`,""];["iPA","PA","PR","post","campaign"].forEach(k=>{const items=bs[k]||[];if(!items.length)return;lines.push(STAGE_META[k].label);items.forEach(c=>lines.push(`  · ${itemLabel(c)}${itemUrl(c)?" → "+itemUrl(c):""}`));lines.push("");});navigator.clipboard.writeText(lines.join("\n")).then(()=>toast("Copied!")).catch(()=>toast("Copy failed"));}
+function renderTabMilestones(p){
+  let html=`<p class="sec-title">Timeline milestones</p>`;
+  MILESTONES.filter(m=>m.key!=="training").forEach(m=>{
+    const date=p[m.key];const statusKey=MSTATUS_KEYS[m.key];const status=statusKey?p[statusKey]:null;
+    if(!date&&!status)return;
+    html+=`<div class="milestone-row"><div style="display:flex;align-items:center;gap:8px"><span class="m-dot" style="background:${m.color}"></span><span style="font-size:12px;font-weight:500">${m.label}</span></div><div style="display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:var(--text2)">${fmt(date)}</span>${status?sbadge(status):""}</div></div>`;
+  });
+  // Training sessions — multiple, fully editable
+  const trainings=p.trainings||[];
+  if(trainings.length>0){
+    html+=`<p class="sec-title" style="margin-top:18px">Training sessions</p>`;
+    trainings.forEach((t,ti)=>{
+      html+=`<div class="training-block" style="margin-bottom:8px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <p style="font-size:11px;font-weight:600;color:#5a6600;margin:0">★ ${t.name||"Training"}</p>
+        </div>
+        <div style="display:grid;gap:5px">
+          <div style="display:flex;gap:8px;font-size:12px"><span style="color:#7a8800;font-weight:500;width:80px">Date</span><span style="color:var(--text2)">${fmt(t.date)||"TBC"}</span></div>
+          <div style="display:flex;gap:8px;font-size:12px"><span style="color:#7a8800;font-weight:500;width:80px">Audience</span><span style="color:var(--text2)">${t.audience||"Global sales team"}</span></div>
+          <div style="display:flex;gap:8px;font-size:12px"><span style="color:#7a8800;font-weight:500;width:80px">Materials</span><span style="color:var(--text2)">${t.materials||"Sales enablement deck"+(p.iPA?" — available from iPA ("+fmt(p.iPA)+")":"")}</span></div>
+          ${t.notes?`<div style="display:flex;gap:8px;font-size:12px"><span style="color:#7a8800;font-weight:500;width:80px">Notes</span><span style="color:var(--text2)">${t.notes}</span></div>`:""}
+        </div>
+      </div>`;
+    });
+  }
+  if(p.notes)html+=`<p class="sec-title" style="margin-top:18px">Notes</p><p style="font-size:12px;color:var(--text2);line-height:1.6">${p.notes}</p>`;
+  document.getElementById("tab-milestones").innerHTML=html;
+}
+
+function openEditModal(id){
+  const p=PRODUCTS.find(x=>x.id===id);if(!p)return;
+  const dfs=[{key:"pg",skey:"pgStatus",label:"Proving Ground"},{key:"pilot",skey:"pilotStatus",label:"Pilot"},{key:"iPA",skey:"ipaStatus",label:"iPA"},{key:"training",skey:null,label:"Training date"},{key:"PA",skey:"paStatus",label:"PA"},{key:"PR",skey:"prStatus",label:"PR"}];
+  const opts=["","done","in-progress","upcoming","planned","open"];
+  const bs=p.collateralByStage||{};
+  document.getElementById("modal-content").innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h3 style="font-size:15px;font-weight:600;margin:0">Edit: ${p.product}</h3>
+      <button onclick="closeModal()" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--text2);line-height:1">×</button>
+    </div>
+    <div class="field-row" style="margin-bottom:10px">
+      <div class="field-group" style="margin-bottom:0"><label>Product name</label><input id="e-product" value="${p.product||""}"/></div>
+      <div class="field-group" style="margin-bottom:0"><label>Type</label><select id="e-type">${["Mega","Major","Minor"].map(t=>`<option${p.type===t?" selected":""}>${t}</option>`).join("")}</select></div>
+    </div>
+    <hr style="border:none;border-top:0.5px solid var(--border);margin:12px 0"/>
+    <p style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin-bottom:10px">Dates &amp; statuses</p>
+    ${dfs.map(f=>`<div class="${f.skey?"field-row":"field-group"}" style="margin-bottom:8px"><div class="field-group" style="margin-bottom:0"><label>${f.label} (YYYY-MM-DD)</label><input id="e-${f.key}" value="${p[f.key]||""}" placeholder="e.g. 2026-07-20"/></div>${f.skey?`<div class="field-group" style="margin-bottom:0"><label>Status</label><select id="e-${f.skey}">${opts.map(s=>`<option value="${s}"${p[f.skey]===s?" selected":""}>${s||"— none —"}</option>`).join("")}</select></div>`:""}</div>`).join("")}
+    <div class="field-group"><label style="color:#7a8800;font-weight:500">★ Training sessions (one per line: Name | YYYY-MM-DD | Audience | Materials)</label><textarea id="e-trainings" rows="4" placeholder="e.g. Product Webinar | 2026-09-16 | Global sales team | Sales enablement deck">${(p.trainings||[]).map(t=>[t.name,t.date||"",t.audience||"",t.materials||""].join(" | ").replace(/\s*\|\s*$/, "").replace(/\s*\|\s*$/, "").replace(/\s*\|\s*$/, "")).join("\n")}</textarea></div>
+    <hr style="border:none;border-top:0.5px solid var(--border);margin:12px 0"/>
+    <p style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin-bottom:10px">Collateral by stage (one item per line)</p>
+    ${["iPA","PA","PR","post"].map(k=>`<div class="field-group"><label style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:1px;background:${STAGE_META[k].color};flex-shrink:0"></span>${STAGE_META[k].label.split("—")[0].trim()}</label><textarea id="e-coll-${k}" rows="3">${(bs[k]||[]).map(c=>itemLabel(c)).join("\n")}</textarea></div>`).join("")}
+    <div class="field-group" style="background:#f7ffcc;border:0.5px solid #b8c400;border-radius:8px;padding:10px 12px;margin-top:4px"><label style="font-weight:600;color:#5a6600;margin-bottom:6px;display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:1px;background:#a0b000;flex-shrink:0"></span>Regional marketing &amp; campaign activities</label><label style="font-size:11px;color:#7a8800;margin-bottom:4px;display:block">One activity per line: Activity name | YYYY-MM-DD</label><textarea id="e-campaign-items" rows="5" placeholder="e.g. Regional launch campaign | 2026-10-15">${(p.campaignItems||[]).map(ci=>ci.name+(ci.date?" | "+ci.date:"")).join("\n")}</textarea><span style="font-size:10px;color:#7a8800;display:block;margin-top:4px">Each activity gets its own date — not tied to the PR date.</span></div>
+    <div class="field-group"><label>Notes</label><textarea id="e-notes" rows="3">${p.notes||""}</textarea></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveEdit(${p.id})">Save changes</button>
+    </div>`;
+  document.getElementById("modal-overlay").classList.add("open");
+}
+function closeModal(){document.getElementById("modal-overlay").classList.remove("open");}
+
+function saveEdit(id){
+  if(!currentPMM){toast("Please select your name first");return;}
+  const idx=PRODUCTS.findIndex(x=>x.id===id);if(idx===-1)return;
+  const old=JSON.parse(JSON.stringify(PRODUCTS[idx]));
+  const p=PRODUCTS[idx];
+  const g=k=>{const el=document.getElementById("e-"+k);return el?el.value.trim()||null:p[k];};
+  const gc=k=>{
+    if(k==="campaign"){
+      // Build campaign list from campaignItems names
+      const el=document.getElementById("e-campaign-items");
+      if(el&&el.value.trim()){return el.value.split("\n").map(l=>l.split("|")[0].trim()).filter(Boolean);}
+      return(p.collateralByStage||{})["campaign"]||[];
+    }
+    const el=document.getElementById("e-coll-"+k);return el?(el.value.split("\n").map(s=>s.trim()).filter(Boolean)):((p.collateralByStage||{})[k]||[]);
+  };
+  // parse trainings from modal
+  const trainingsRaw=(document.getElementById("e-trainings")?.value||"").trim();
+  const trainings=trainingsRaw?trainingsRaw.split("\n").map(l=>{const parts=l.split("|").map(s=>s.trim());return{name:parts[0]||"Training",date:parts[1]||"",audience:parts[2]||"",materials:parts[3]||""};}).filter(t=>t.name):(p.trainings||[]);
+  // parse campaignItems from modal
+  const campRaw=(document.getElementById("e-campaign-items")?.value||"").trim();
+  const campaignItems=campRaw?campRaw.split("\n").map(l=>{const parts=l.split("|").map(s=>s.trim());return{name:parts[0]||"Campaign activity",date:parts[1]||""};}).filter(c=>c.name):(p.campaignItems||[]);
+  PRODUCTS[idx]={...p,product:g("product")||p.product,type:g("type")||p.type,pg:g("pg"),pilot:g("pilot"),iPA:g("iPA"),trainings,campaignItems,PA:g("PA"),PR:g("PR"),pgStatus:g("pgStatus"),pilotStatus:g("pilotStatus"),ipaStatus:g("ipaStatus"),paStatus:g("paStatus"),prStatus:g("prStatus"),collateralByStage:{iPA:gc("iPA"),PA:gc("PA"),PR:gc("PR"),post:gc("post"),campaign:gc("campaign")},notes:(document.getElementById("e-notes")?.value||"").trim()};
+
+  // Build change summary
+  const changes=[];
+  const fields=["iPA","PA","PR","pg","pilot","pgStatus","pilotStatus","ipaStatus","paStatus","prStatus","notes"];
+  fields.forEach(f=>{if(old[f]!==PRODUCTS[idx][f])changes.push(`${f}: "${old[f]||"—"}" → "${PRODUCTS[idx][f]||"—"}"`)});
+  const oldColl=JSON.stringify(old.collateralByStage);const newColl=JSON.stringify(PRODUCTS[idx].collateralByStage);
+  if(oldColl!==newColl)changes.push("Collateral plan updated");
+  const summary=changes.length?changes.join("\n"):"Minor update";
+
+  // Persist to localStorage (hub-dashboard reads this)
+  persistData();
+
+  // Log the change locally
+  const entry={time:new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}),who:currentPMM,product:PRODUCTS[idx].product,summary};
+  changeLog.unshift(entry);
+  renderChangeLog();
+
+  // Send email notification
+  sendNotification(currentPMM, PRODUCTS[idx].product, summary);
+
+  closeModal();renderAll();
+  if(currentDrawerId===id)openDrawer(id);
+  toast(`✓ Saved — Maxime notified`);
+}
+
+function renderChangeLog(){
+  const el=document.getElementById("changelog-entries");
+  if(!changeLog.length){el.innerHTML=`<p style="font-size:11px;color:var(--text3);font-style:italic">No changes yet this session.</p>`;return;}
+  el.innerHTML=changeLog.slice(0,10).map(e=>`<div class="log-entry"><span class="log-time">${e.time}</span><span class="log-who">${e.who}</span><span><strong>${e.product}</strong> — ${e.summary.split("\n")[0]}${e.summary.split("\n").length>1?" (+more)":""}</span></div>`).join("");
+}
+
+function renderTabRegional(p){
+  const bs=p.collateralByStage||{};
+  const ipaItems=bs.iPA||[];
+  const paItems=bs.PA||[];
+  const prItems=bs.PR||[];
+  const postItems=bs.post||[];
+  const campItems=p.campaignItems||[];
+  const allItems=collateralFlat(p);
+
+  let html=`<p class="sec-title">For regional sales teams</p>
+  <div class="audience-section">
+    <div class="audience-row">
+      <span class="aud-icon">🗓️</span>
+      <div>
+        <div class="aud-label">When to expect sales materials</div>
+        <div class="aud-text">${p.iPA?`<strong>Internal briefing (iPA):</strong> ${fmt(p.iPA)} — Sales enablement deck available before public launch.<br>`:""}${p.PA||p.PR?`<strong>Public launch (PA/PR):</strong> ${fmt(p.PA||p.PR)} — Full collateral pack available for customer conversations.`:""}</div>
+      </div>
+    </div>
+    <div class="audience-row">
+      <span class="aud-icon">📦</span>
+      <div>
+        <div class="aud-label">Materials available at iPA</div>
+        <div class="aud-text">${ipaItems.length?ipaItems.map(c=>itemLabel(c)).join(", "):"None — product goes straight to PA/PR."}</div>
+      </div>
+    </div>
+    <div class="audience-row">
+      <span class="aud-icon">🌍</span>
+      <div>
+        <div class="aud-label">Materials available at PA/PR</div>
+        <div class="aud-text">${[...paItems,...prItems].length?[...paItems,...prItems].map(c=>itemLabel(c)).join(", "):"TBC"}</div>
+      </div>
+    </div>
+    <div class="audience-row">
+      <span class="aud-icon">⚠️</span>
+      <div>
+        <div class="aud-label">Region actions</div>
+        <div class="aud-text">Do not share externally before PA date. Campaign assets released with PR — coordinate local activation with your regional marketing contact.</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="sec-title">For communications team</p>
+  <div class="audience-section">
+    <div class="audience-row">
+      <span class="aud-icon">📣</span>
+      <div>
+        <div class="aud-label">iPA ownership</div>
+        <div class="aud-text">Communications leads the iPA announcement. Target: ${fmt(p.iPA||null)}. Briefing deck: ${ipaItems.length?itemLabel(ipaItems[0]):"TBC"}.</div>
+      </div>
+    </div>
+    <div class="audience-row">
+      <span class="aud-icon">📢</span>
+      <div>
+        <div class="aud-label">PA &amp; press release</div>
+        <div class="aud-text">PA target: ${fmt(p.PA||null)} · PR target: ${fmt(p.PR||null)}. ${prItems.length?"Campaign assets: "+prItems.map(c=>itemLabel(c)).join(", ")+".": " No press release assets listed yet."}</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="sec-title">Regional marketing &amp; campaign schedule</p>
+  <div class="audience-section">`;
+  if(campItems.length){
+    campItems.forEach(ci=>{
+      html+=`<div class="audience-row" style="align-items:center">
+        <span class="aud-icon">🎯</span>
+        <div style="flex:1">
+          <div class="aud-label">${ci.name}</div>
+          <div class="aud-text">${ci.date?`Scheduled: <strong>${fmt(ci.date)}</strong>`:"Date TBC"}</div>
+        </div>
+      </div>`;
+    });
+  } else {
+    html+=`<div class="audience-row"><span class="aud-icon">🎯</span><div><div class="aud-label">No campaign activities scheduled yet</div><div class="aud-text">Add activities via Edit — use the "Campaign activity dates" section.</div></div></div>`;
+  }
+  html+=`</div>`;
+
+  // Trainings
+  const trainings=p.trainings||[];
+  if(trainings.length){
+    html+=`<p class="sec-title">Training sessions</p><div class="audience-section">`;
+    trainings.forEach(t=>{
+      html+=`<div class="audience-row" style="align-items:center">
+        <span class="aud-icon">★</span>
+        <div>
+          <div class="aud-label">${t.name||"Training"}</div>
+          <div class="aud-text">${t.date?`<strong>${fmt(t.date)}</strong>`:""} ${t.audience?"· "+t.audience:""} ${t.materials?"<br>Materials: "+t.materials:""}</div>
+        </div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
+  // Post-launch
+  if(postItems.length){
+    html+=`<p class="sec-title">Post-launch content</p>
+    <div class="audience-section"><div class="audience-row"><span class="aud-icon">📄</span><div>
+      <div class="aud-label">Following PR</div>
+      <div class="aud-text">${postItems.map(c=>itemLabel(c)).join(", ")}. These support deeper-funnel regional campaigns.</div>
+    </div></div></div>`;
+  }
+
+  html+=`<p class="sec-title" style="margin-top:18px">Summary</p>
+  <div class="audience-section"><div class="audience-row"><span class="aud-icon">📊</span><div>
+    <div class="aud-label">Total collateral for ${p.product}</div>
+    <div class="aud-text">${allItems.length} items across all stages. ${p.type==="Mega"?"Mega release — full campaign support expected.":p.type==="Major"?"Major release — standard collateral pack.":"Minor release — targeted materials only."}</div>
+  </div></div></div>`;
+
+  document.getElementById("tab-regional").innerHTML=html;
+}
+
+function setView(v){currentView=v;document.getElementById("view-gantt").style.display=v==="gantt"?"block":"none";document.getElementById("view-table").style.display=v==="table"?"block":"none";document.getElementById("btn-gantt").classList.toggle("active",v==="gantt");document.getElementById("btn-table").classList.toggle("active",v==="table");if(v==="table")renderTable();}
+function setPortfolio(p){activePort=p;renderAll();}
+function toggleMS(key){visMS.has(key)?visMS.delete(key):visMS.add(key);renderToggles();renderGantt();}
+function renderAll(){renderStats();renderPills();renderToggles();renderGantt();if(currentView==="table")renderTable();}
+
+renderAll();
+</script>
+
+
+</body></html>
