@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMM Dashboard · 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--bg2:#f4f9ff;--bg3:#e8f4ff;
+  --text:#0a1628;--text2:#3a5068;--text3:#7a9ab8;
+  --border:rgba(1,173,255,0.15);--border2:rgba(1,173,255,0.3);
+  --radius:8px;--radius-lg:12px;--font:'Inter',sans-serif;
+  --hx-blue:#01ADFF;--hx-cyan:#04D0E6;--hx-lime:#DFF73F;
+  --hx-dark:#0077A8;--hx-deep:#004E70;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#091828;--bg2:#0d2035;--bg3:#112840;
+  --text:#e0f0ff;--text2:#7aadcc;--text3:#3a6888;
+  --border:rgba(1,173,255,0.15);--border2:rgba(1,173,255,0.3);
+}}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:13px;line-height:1.5;padding:20px 24px 40px;max-width:1400px;margin:0 auto}
+.hdr{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px;flex-wrap:wrap;gap:12px}
+.hdr h1{font-size:20px;font-weight:600}
+.hdr p{font-size:12px;color:var(--text2);margin-top:3px}
+.pmm-badge{background:#fff8e0;border:0.5px solid #e0b800;color:#7a6000;font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;display:flex;align-items:center;gap:5px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.stat{background:var(--bg2);border-radius:var(--radius);padding:10px 14px;border:0.5px solid var(--border)}
+.stat .lbl{font-size:11px;color:var(--text2);margin-bottom:3px}
+.stat .val{font-size:22px;font-weight:600;color:var(--hx-blue)}
+.controls{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.pill-group{display:flex;gap:5px}
+button.pill{padding:4px 12px;font-size:11px;font-weight:500;border-radius:20px;cursor:pointer;border:0.5px solid var(--border2);background:none;color:var(--text2);font-family:var(--font)}
+button.pill.active{background:var(--hx-blue);color:#fff;border-color:var(--hx-blue)}
+.tog-group{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+button.tog{display:flex;align-items:center;gap:5px;padding:3px 10px;font-size:11px;font-weight:500;border-radius:20px;cursor:pointer;font-family:var(--font)}
+.view-btn{padding:5px 14px;font-size:12px;border-radius:6px;cursor:pointer;border:0.5px solid var(--border2);background:none;color:var(--text2);font-family:var(--font)}
+.view-btn.active{background:#e0f4ff;color:var(--hx-dark);border-color:var(--hx-blue)}
+.gantt-outer{border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.gantt-scroll{overflow-x:auto}
+.badge{display:inline-block;font-size:9px;font-weight:600;padding:1px 5px;border-radius:8px;vertical-align:middle}
+.badge-mega{background:#e0f4ff;color:#004E70;border:0.5px solid var(--hx-blue)}
+.badge-major{background:#e0fcff;color:#006070;border:0.5px solid var(--hx-cyan)}
+.badge-minor{background:#f7ffcc;color:#5a6600;border:0.5px solid #b8c400}
+.status{display:inline-block;font-size:10px;font-weight:500;padding:1px 6px;border-radius:10px}
+.s-done{background:#e0fcff;color:#006070}
+.s-in-progress{background:#e0f4ff;color:#0077A8}
+.s-upcoming{background:#fff8e0;color:#7a6000}
+.s-planned{background:#f0f0ff;color:#3a3490}
+.s-open{background:#f0f4f8;color:#3a5068}
+.legend{display:flex;gap:16px;padding:10px 14px;border-top:0.5px solid var(--border);flex-wrap:wrap;align-items:center;background:var(--bg2)}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)}
+#view-table{display:none}
+table.dt{width:100%;border-collapse:collapse;font-size:12px}
+table.dt th{padding:8px 10px;text-align:left;font-weight:500;font-size:11px;color:var(--text2);border-bottom:0.5px solid var(--border2);background:var(--bg2);position:sticky;top:0;z-index:5}
+table.dt td{padding:7px 10px;border-bottom:0.5px solid var(--border);vertical-align:middle}
+table.dt tbody tr:hover{background:var(--bg2);cursor:pointer}
+.overlay{position:fixed;inset:0;background:rgba(0,10,30,0.4);z-index:900;display:none}
+.overlay.open{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:460px;background:var(--bg);border-left:0.5px solid var(--border2);z-index:901;overflow-y:auto;transform:translateX(100%);transition:transform .2s ease}
+.drawer.open{transform:translateX(0)}
+.drawer-head{padding:18px 20px 14px;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:5}
+.drawer-body{padding:16px 20px 24px}
+.sec-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin-bottom:10px;margin-top:18px}
+.close-btn{background:none;border:none;cursor:pointer;font-size:22px;color:var(--text2);line-height:1;padding:0;float:right}
+.stage-card{border:0.5px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden}
+.stage-card-head{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;user-select:none}
+.stage-card-head:hover{background:var(--bg2)}
+.stage-chevron{margin-left:auto;font-size:12px;color:var(--text3);transition:transform .15s}
+.stage-card-body{padding:0 12px;max-height:0;overflow:hidden;transition:max-height .25s ease,padding .2s}
+.stage-card-body.open{max-height:500px;padding:8px 12px 12px}
+.coll-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--border);font-size:12px;color:var(--text2)}
+.coll-item:last-child{border-bottom:none}
+.coll-dot{width:6px;height:6px;border-radius:1px;flex-shrink:0;margin-top:4px}
+.coll-link{font-size:10px;color:var(--hx-blue);text-decoration:none;margin-left:auto;white-space:nowrap;flex-shrink:0}
+.coll-link:hover{text-decoration:underline}
+.milestone-row{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--bg2);border-radius:8px;margin-bottom:6px}
+.m-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.training-block{background:#f7ffcc;border:0.5px solid #b8c400;border-radius:10px;padding:12px 14px;margin-top:12px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,10,30,0.45);z-index:1000;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg);border-radius:var(--radius-lg);border:0.5px solid var(--border2);padding:20px;width:520px;max-height:88vh;overflow-y:auto}
+.field-group{margin-bottom:12px}
+.field-group label{display:block;font-size:11px;color:var(--text2);margin-bottom:4px}
+.field-group input,.field-group textarea,.field-group select{width:100%;font-size:12px;padding:6px 8px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg);color:var(--text);font-family:var(--font)}
+.field-group textarea{resize:vertical}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn-cancel{padding:6px 16px;font-size:12px;border-radius:6px;cursor:pointer;border:0.5px solid var(--border2);background:none;color:var(--text2);font-family:var(--font)}
+.btn-save{padding:6px 16px;font-size:12px;border-radius:6px;cursor:pointer;background:var(--hx-blue);color:#fff;border:none;font-weight:500;font-family:var(--font)}
+.edit-btn{width:100%;padding:9px;font-size:13px;font-weight:500;background:var(--hx-blue);color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:var(--font);margin-top:14px}
+.sec-btn{width:100%;padding:8px;font-size:12px;font-weight:500;background:none;color:var(--hx-blue);border:0.5px solid var(--hx-blue);border-radius:8px;cursor:pointer;font-family:var(--font);margin-top:8px}
+.changelog{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-top:18px}
+.changelog h3{font-size:12px;font-weight:600;margin-bottom:10px;color:var(--text2)}
+.log-entry{font-size:11px;color:var(--text2);padding:5px 0;border-bottom:0.5px solid var(--border);display:flex;gap:10px}
+.log-entry:last-child{border-bottom:none}
+.log-time{color:var(--text3);flex-shrink:0;width:120px}
+.log-who{color:var(--hx-blue);font-weight:500;flex-shrink:0;width:90px}
+.audience-section{background:var(--bg2);border-radius:10px;padding:12px 14px;margin-bottom:10px;border:0.5px solid var(--border)}
+.audience-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.audience-row:last-child{margin-bottom:0}
+.aud-icon{font-size:16px;flex-shrink:0;width:20px;text-align:center}
+.aud-label{font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px}
+.aud-text{font-size:11px;color:var(--text2);line-height:1.5}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#0a1628;color:#fff;font-size:12px;padding:8px 18px;border-radius:20px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:3000}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* Password gate */
+.pw-gate{position:fixed;inset:0;background:rgba(0,10,30,0.6);z-index:2000;display:flex;align-items:center;justify-content:center}
+.pw-box{background:var(--bg);border-radius:var(--radius-lg);border:0.5px solid var(--border2);padding:28px 32px;width:320px;text-align:center}
+.pw-box h2{font-size:15px;font-weight:600;margin-bottom:6px}
+.pw-box p{font-size:12px;color:var(--text2);margin-bottom:16px}
+.pw-box input{width:100%;font-size:13px;padding:8px 10px;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg);color:var(--text);font-family:var(--font);text-align:center;letter-spacing:0.1em;margin-bottom:10px}
+.pw-box button{width:100%;padding:8px;font-size:13px;font-weight:500;background:var(--hx-blue);color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:var(--font)}
+.pw-box .pw-cancel{background:none;color:var(--text2);border:0.5px solid var(--border2);margin-top:8px}
+.pw-error{font-size:11px;color:#c8102e;margin-top:6px;display:none}
+.sync-bar{font-size:11px;color:var(--text3);padding:4px 0;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--text3)}
+.sync-dot.live{background:#2ecc71}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <h1>Product Marketing <span id="mode-label" style="font-size:14px;font-weight:400;color:var(--text2)"></span></h1>
+    <p>Release timeline · iPA / PA / PR · Jun – Dec 2026</p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span id="edit-badge" class="pmm-badge" style="display:none">✏️ Edit mode</span>
+    <button id="edit-access-btn" onclick="showPasswordGate()" style="padding:5px 14px;font-size:12px;border-radius:6px;cursor:pointer;border:0.5px solid var(--border2);background:none;color:var(--text2);font-family:var(--font);display:none">Edit</button>
+    <button id="exit-edit-btn" onclick="exitEditMode()" style="padding:5px 14px;font-size:12px;border-radius:6px;cursor:pointer;border:0.5px solid #c8102e;background:none;color:#c8102e;font-family:var(--font);display:none">Exit edit</button>
+    <button class="view-btn active" id="btn-gantt" onclick="setView('gantt')">Timeline</button>
+    <button class="view-btn" id="btn-table" onclick="setView('table')">Table</button>
+  </div>
+</div>
+
+<div class="sync-bar"><span class="sync-dot" id="sync-dot"></span><span id="sync-label">Loading data…</span></div>
+
+<div class="stats" id="stats-row"></div>
+
+<div class="controls">
+  <div class="pill-group" id="port-pills"></div>
+  <div class="tog-group" id="m-toggles"></div>
+</div>
+
+<div id="view-gantt">
+  <div class="gantt-outer">
+    <div class="gantt-scroll"><div id="gantt-table"></div></div>
+    <div class="legend" id="gantt-legend"></div>
+  </div>
+</div>
+
+<div id="view-table" style="border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
+  <div style="overflow-x:auto"><table class="dt" id="data-table"></table></div>
+</div>
+
+<div class="changelog" id="changelog-panel">
+  <h3>Recent changes</h3>
+  <div id="changelog-entries"><p style="font-size:11px;color:var(--text3);font-style:italic">No changes recorded yet.</p></div>
+</div>
+
+<!-- Drawer -->
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <button class="close-btn" onclick="closeDrawer()">×</button>
+    <div id="drawer-head-content"></div>
+  </div>
+  <div class="drawer-body">
+    <div style="display:flex;gap:0;border-bottom:0.5px solid var(--border);margin-bottom:4px" id="drawer-tabs"></div>
+    <div id="tab-collateral"></div>
+    <div id="tab-milestones" style="display:none"></div>
+    <div id="tab-regional" style="display:none"></div>
+    <button class="edit-btn" id="drawer-edit-btn" onclick="openEditModal(currentDrawerId)" style="display:none">Edit dates &amp; collateral</button>
+  </div>
+</div>
+
+<!-- Edit modal -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<!-- Password gate -->
+<div class="pw-gate" id="pw-gate" style="display:none">
+  <div class="pw-box">
+    <h2>PMM Edit Access</h2>
+    <p>Enter the team password to enable editing</p>
+    <input type="password" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')checkPassword()">
+    <p class="pw-error" id="pw-error">Incorrect password</p>
+    <button onclick="checkPassword()">Unlock</button>
+    <button class="pw-cancel" onclick="hidePwGate()">Cancel</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Password (change this to your team password) ──────────────────
+const EDIT_PASSWORD = "pmm2026";
+
+// ── Storage key ───────────────────────────────────────────────────
+const STORAGE_KEY = "pmm-dashboard-data-v1";
+
+// ── Edit mode state ───────────────────────────────────────────────
+let isEditMode = false;
+
+// ── Change log ────────────────────────────────────────────────────
+let changeLog = [];
+
+// ── Base product data ─────────────────────────────────────────────
+const BASE_PRODUCTS = [
+  { id:2, portfolio:"Safety", product:"CAS 10.36", type:"Major",
+    pg:"2026-06-15", pilot:"2026-07-06", iPA:"2026-06-18", trainings:[], PA:"2026-06-22", PR:"2026-07-20",
+    pgStatus:"in-progress", pilotStatus:"open", ipaStatus:"upcoming", paStatus:"upcoming", prStatus:"upcoming",
+    collateralByStage:{iPA:["Updated sales enablement deck (CAS4→CAS10 upgrade focus)"],PA:["Updated brochure","Updated datasheet","Updated overview deck (incl. VIS + PA + 4D radars)"],PR:["Safety campaign assets"],post:[],campaign:["Regional campaign — bundled with VIS launch"]},
+    campaignItems:[{name:"Regional campaign — bundled with VIS launch",date:"2026-07-20"}],
+    notes:"PG: Jun 15–26 (CAS/VIS). NPI Pilot at Venetia: Jul 6–19. Collateral refinement pending Messaging Framework approval." },
+  { id:1, portfolio:"Safety", product:"VIS Release", type:"Mega",
+    pg:"2026-06-15", pilot:"2026-07-06", iPA:"2026-06-11", trainings:[{name:"Global Sales Training",date:"2026-06-22"}], PA:"2026-06-22", PR:"2026-07-20",
+    pgStatus:"in-progress", pilotStatus:"open", ipaStatus:"upcoming", paStatus:"upcoming", prStatus:"upcoming",
+    collateralByStage:{iPA:["Sales enablement deck"],PA:["Brochure","Datasheet (VIS)","Datasheet (b-kit)","Overview deck"],PR:["Product overview video","Safety campaign assets"],post:["Technical deck","Product capability statement","Case study"],campaign:["Regional marketing campaign","Social media alignment","Email announcement to existing VIS customers"]},
+    campaignItems:[{name:"Regional marketing campaign",date:"2026-07-20"},{name:"Social media alignment",date:"2026-07-25"},{name:"Email announcement to existing VIS customers",date:"2026-07-28"}],
+    notes:"PG: Jun 15–26 (CAS/VIS). NPI Pilot at Venetia: Jul 6–19. Global sales training week of 22 Jun. Press release under review. Website update ongoing." },
+  { id:3, portfolio:"Safety", product:"CAS Insights 5.1", type:"Minor",
+    pg:"2026-06-16", pilot:"2026-07-07", iPA:"2026-06-29", trainings:[], PA:null, PR:"2026-08-17",
+    pgStatus:"in-progress", pilotStatus:"open", ipaStatus:"upcoming", paStatus:null, prStatus:"planned",
+    collateralByStage:{iPA:["Sales enablement deck (incl. MineEntreprise)","Product overview deck"],PA:[],PR:["Brochure","Data-privacy / related content"],post:[],campaign:[]},
+    campaignItems:[],
+    notes:"PG: Jun 16–29. NPI Pilot 5.1: Jul 7–28. Soft release to CAS customer base only." },
+  { id:12, portfolio:"Safety", product:"4D Radar", type:"Minor",
+    pg:null, pilot:null, iPA:null, trainings:[], PA:"2026-06-22", PR:"2026-07-20",
+    pgStatus:null, pilotStatus:null, ipaStatus:null, paStatus:"upcoming", prStatus:"upcoming",
+    collateralByStage:{iPA:[],PA:["Sales enablement deck","Brochure","Datasheet","Overview deck"],PR:[],post:[],campaign:[]},
+    campaignItems:[],
+    notes:"Previously deprioritised by PM. PM agreed to accelerate brief. Radar datasheet is standalone." },
+  { id:4, portfolio:"Safety", product:"OAS Web", type:"Minor",
+    pg:null, pilot:null, iPA:null, trainings:[], PA:null, PR:"2026-06-30",
+    pgStatus:null, pilotStatus:null, ipaStatus:null, paStatus:null, prStatus:"upcoming",
+    collateralByStage:{iPA:[],PA:[],PR:["Overview deck","Sales enablement deck"],post:[],campaign:[]},
+    campaignItems:[],
+    notes:"Minor release to existing customers." },
+  { id:6, portfolio:"Safety", product:"IAS (Helios)", type:"Minor",
+    pg:null, pilot:null, iPA:"2026-07-27", trainings:[], PA:"2026-08-31", PR:"2026-09-30",
+    pgStatus:null, pilotStatus:null, ipaStatus:"planned", paStatus:"planned", prStatus:"planned",
+    collateralByStage:{iPA:["Sales enablement deck","Overview deck"],PA:["Brochure","Product overview video","Datasheet"],PR:["Safety campaign assets"],post:["Technical deck","Product capability statement","Case study"],campaign:["Regional campaign — targeted customers only"]},
+    campaignItems:[{name:"Regional campaign — targeted customers only",date:"2026-10-14"}],
+    notes:"Brochure and datasheet completed. Overview deck to be completed by Jun 19. Sales enablement deck by end Jun." },
+  { id:5, portfolio:"Safety", product:"UG CAS", type:"Major",
+    pg:"2026-08-03", pilot:"2026-09-09", iPA:"2026-08-01", trainings:[], PA:"2026-09-30", PR:"2026-10-26",
+    pgStatus:"open", pilotStatus:"open", ipaStatus:"planned", paStatus:"planned", prStatus:"planned",
+    collateralByStage:{iPA:["Messaging framework","Sales enablement deck","Overview deck"],PA:["Brochure","Product overview video","Datasheet"],PR:["Safety campaign assets"],post:["Technical deck","Product capability statement","Case study"],campaign:["Regional campaign — post PR","Potential early press release Aug (check JD & Dave)"]},
+    campaignItems:[{name:"Regional campaign — post PR",date:"2026-11-03"},{name:"Potential early press release Aug",date:"2026-08-15"}],
+    notes:"PG at Krolpa: Aug 3–14. NPI Pilot at Goldfield: Sep 9–22. Potential early press release August — check with JD and Dave." },
+  { id:13, portfolio:"Safety", product:"Antenna Mast", type:"Minor",
+    pg:null, pilot:null, iPA:null, trainings:[], PA:null, PR:"2026-09-30",
+    pgStatus:null, pilotStatus:null, ipaStatus:null, paStatus:null, prStatus:"planned",
+    collateralByStage:{iPA:[],PA:[],PR:["Brochure","Datasheet","Overview deck"],post:[],campaign:[]},
+    campaignItems:[],
+    notes:"Pending PM alignment." },
+  { id:7, portfolio:"Operations", product:"Asset Health", type:"Major",
+    pg:null, pilot:null, iPA:null, trainings:[], PA:"2026-06-29", PR:"2026-06-29",
+    pgStatus:null, pilotStatus:null, ipaStatus:null, paStatus:"upcoming", prStatus:"upcoming",
+    collateralByStage:{iPA:[],PA:["Internal sales training"],PR:[],post:[],campaign:[]},
+    campaignItems:[],
+    notes:"PA and PR: 29 Jun. Most content pre-built. Skip iPA — go straight to PA. Internal webinar TBC." },
+  { id:8, portfolio:"Operations", product:"OP Pro / OAS HW", type:"Major",
+    pg:"2026-05-25", pilot:"2026-06-29", iPA:"2026-06-19", trainings:[], PA:null, PR:"2026-07-17",
+    pgStatus:"done", pilotStatus:"open", ipaStatus:"upcoming", paStatus:null, prStatus:"upcoming",
+    collateralByStage:{iPA:["Sales enablement deck","Overview deck"],PA:[],PR:["Brochure","Datasheet","Product overview video"],post:["Case study","Broad operations portfolio campaign"],campaign:["Ops portfolio campaign — post PR"]},
+    campaignItems:[{name:"Ops portfolio campaign — post PR",date:"2026-07-31"}],
+    notes:"PG (Codelco): May 25–Jun 26. Pilot results: Jun 29–Jul 3." },
+  { id:9, portfolio:"Operations", product:"OP Tracker", type:"Mega",
+    pg:"2026-07-06", pilot:"2026-08-03", iPA:"2026-06-26", trainings:[], PA:"2026-08-15", PR:"2026-09-25",
+    pgStatus:"open", pilotStatus:"open", ipaStatus:"upcoming", paStatus:"planned", prStatus:"planned",
+    collateralByStage:{iPA:["Sales enablement deck","Overview deck"],PA:["Brochure","Product overview video","Datasheet"],PR:["Product technical deck"],post:["Case study"],campaign:["Regional campaign — post PR"]},
+    campaignItems:[{name:"Regional campaign — post PR",date:"2026-10-09"}],
+    notes:"PG: Jul 6–24. NPI Pilot: Aug 3–28. PM needs to fill brief form for CMFramework." },
+  { id:10, portfolio:"Resource Opt.", product:"Drill Hole Manager", type:"Major",
+    pg:null, pilot:null, iPA:"2026-08-01", trainings:[{name:"Customer Marketing Webinar",date:"2026-09-16"}], PA:"2026-10-01", PR:"2026-11-11",
+    pgStatus:null, pilotStatus:null, ipaStatus:"planned", paStatus:"planned", prStatus:"planned",
+    collateralByStage:{iPA:["Sales enablement deck"],PA:["Product overview deck","Brochure"],PR:[],post:[],campaign:[]},
+    campaignItems:[],
+    notes:"iPA and PA dates TBC. PG/Pilot dates TBC with PM. Product Webinar: Sep 16." },
+  { id:11, portfolio:"Resource Opt.", product:"Radar Solutions (×9 products)", type:"Major",
+    pg:null, pilot:null, iPA:null, trainings:[], PA:null, PR:null,
+    pgStatus:null, pilotStatus:null, ipaStatus:null, paStatus:null, prStatus:"planned",
+    collateralByStage:{iPA:[],PA:[],PR:["6 collaterals per product × 9 products (brochures, datasheets, overview decks, etc.)"],post:[],campaign:["Comms and training on belt & crusher soon; fill and bulk inventory campaigns end Jul"]},
+    campaignItems:[{name:"Belt & crusher comms/training",date:"2026-07-15"},{name:"Fill and bulk inventory campaigns",date:"2026-07-31"}],
+    notes:"Jun–Dec 2026. No PR event. Core collateral build across 9 products." },
+];
+
+const USER_EDITABLE_FIELDS = ["pg","pilot","iPA","PA","PR","pgStatus","pilotStatus","ipaStatus","paStatus","prStatus","notes","trainings","campaignItems","collateralByStage"];
+
+let PRODUCTS = JSON.parse(JSON.stringify(BASE_PRODUCTS));
+
+// ── Cloud storage (shared across all users) ────────────────────────
+async function loadFromCloud() {
+  try {
+    const result = await window.storage.get(STORAGE_KEY, true);
+    const data = JSON.parse(result.value);
+    if (data && data.products) {
+      const byId = {};
+      data.products.forEach(p => byId[p.id] = p);
+      PRODUCTS = BASE_PRODUCTS.map(base => {
+        const saved = byId[base.id];
+        if (!saved) return { ...base };
+        const merged = { ...base };
+        USER_EDITABLE_FIELDS.forEach(f => { if (saved[f] !== undefined) merged[f] = saved[f]; });
+        return merged;
+      });
+    }
+    if (data && data.changeLog) changeLog = data.changeLog.slice(0, 20);
+    setSyncStatus(true);
+  } catch(e) {
+    setSyncStatus(true); // no saved data yet, use defaults
+  }
+  renderAll();
+  renderChangeLog();
+}
+
+async function saveToCloud() {
+  try {
+    await window.storage.set(STORAGE_KEY, JSON.stringify({
+      products: PRODUCTS,
+      changeLog: changeLog.slice(0, 20),
+      lastUpdated: new Date().toISOString()
+    }), true);
+    setSyncStatus(true);
+  } catch(e) {
+    console.warn("Save failed", e);
+  }
+}
+
+function setSyncStatus(live) {
+  document.getElementById("sync-dot").className = "sync-dot" + (live ? " live" : "");
+  document.getElementById("sync-label").textContent = live ? "Live — changes visible to everyone instantly" : "Connecting…";
+}
+
+// ── Edit mode ─────────────────────────────────────────────────────
+function showPasswordGate() {
+  document.getElementById("pw-gate").style.display = "flex";
+  setTimeout(() => document.getElementById("pw-input").focus(), 100);
+}
+function hidePwGate() {
+  document.getElementById("pw-gate").style.display = "none";
+  document.getElementById("pw-input").value = "";
+  document.getElementById("pw-error").style.display = "none";
+}
+function checkPassword() {
+  const val = document.getElementById("pw-input").value;
+  if (val === EDIT_PASSWORD) {
+    hidePwGate();
+    enterEditMode();
+  } else {
+    document.getElementById("pw-error").style.display = "block";
+  }
+}
+function enterEditMode() {
+  isEditMode = true;
+  document.getElementById("edit-badge").style.display = "flex";
+  document.getElementById("edit-access-btn").style.display = "none";
+  document.getElementById("exit-edit-btn").style.display = "block";
+  document.getElementById("drawer-edit-btn").style.display = isEditMode && currentDrawerId ? "block" : "none";
+  document.getElementById("mode-label").textContent = "· Edit mode";
+  toast("Edit mode unlocked");
+}
+function exitEditMode() {
+  isEditMode = false;
+  document.getElementById("edit-badge").style.display = "none";
+  document.getElementById("edit-access-btn").style.display = "block";
+  document.getElementById("exit-edit-btn").style.display = "none";
+  document.getElementById("drawer-edit-btn").style.display = "none";
+  document.getElementById("mode-label").textContent = "";
+}
+
+// ── Config ────────────────────────────────────────────────────────
+const PORT_COLORS={"Safety":"#01ADFF","Operations":"#04D0E6","Resource Opt.":"#0077A8"};
+const MILESTONES=[
+  {key:"pg",label:"Proving Ground",color:"#888780",shape:"triangle"},
+  {key:"pilot",label:"Pilot",color:"#0077A8",shape:"diamond"},
+  {key:"iPA",label:"iPA",color:"#01ADFF",shape:"bar"},
+  {key:"training",label:"Training",color:"#a0b000",shape:"star"},
+  {key:"PA",label:"PA",color:"#0077A8",shape:"bar"},
+  {key:"PR",label:"PR",color:"#04D0E6",shape:"bar"},
+];
+const STAGE_META={
+  iPA:{label:"iPA — Internal product announcement",color:"#01ADFF",bg:"#e0f4ff"},
+  PA:{label:"PA — Public announcement",color:"#0077A8",bg:"#e0f0fa"},
+  PR:{label:"PR — Product release",color:"#04D0E6",bg:"#e0fcff"},
+  post:{label:"Post-launch",color:"#3a5068",bg:"#f0f4f8"},
+  campaign:{label:"Regional marketing & campaigns",color:"#a0b000",bg:"#f7ffcc"},
+};
+const MSTATUS={done:{cls:"s-done",label:"Done"},"in-progress":{cls:"s-in-progress",label:"In Progress"},upcoming:{cls:"s-upcoming",label:"Upcoming"},planned:{cls:"s-planned",label:"Planned"},open:{cls:"s-open",label:"Open"}};
+const MSTATUS_KEYS={pg:"pgStatus",pilot:"pilotStatus",iPA:"ipaStatus",PA:"paStatus",PR:"prStatus"};
+const PORTFOLIOS=["All","Safety","Operations","Resource Opt."];
+const TL_START=new Date("2026-05-01");
+const TL_END=new Date("2026-12-20");
+const TOTAL_DAYS=(TL_END-TL_START)/86400000;
+const GANTT_PX=900,ROW_H=38,PORT_W=28,LABEL_W=190;
+let activePort="All",visMS=new Set(["pg","pilot","iPA","training","PA","PR"]),currentView="gantt",currentDrawerId=null,currentTab="collateral";
+
+function px(d){if(!d)return null;return Math.round((new Date(d+"T00:00:00")-TL_START)/86400000*(GANTT_PX/TOTAL_DAYS));}
+function todayPx(){return Math.round((new Date()-TL_START)/86400000*(GANTT_PX/TOTAL_DAYS));}
+function fmt(s){if(!s)return"—";return new Date(s+"T00:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"2-digit"});}
+function badge(t){const c=t==="Mega"?"badge-mega":t==="Major"?"badge-major":"badge-minor";return`<span class="badge ${c}">${t}</span>`;}
+function sbadge(s){if(!s)return"";const m=MSTATUS[s]||MSTATUS.open;return`<span class="status ${m.cls}">${m.label}</span>`;}
+function filtered(){return activePort==="All"?PRODUCTS:PRODUCTS.filter(p=>p.portfolio===activePort);}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2500);}
+function collateralFlat(p){const s=p.collateralByStage||{};return[...(s.iPA||[]),(s.PA||[]),(s.PR||[]),(s.post||[]),(s.campaign||[])].flat();}
+function itemLabel(c){return typeof c==="object"?c.text:c;}
+function itemUrl(c){return typeof c==="object"?c.url:null;}
+
+function renderStats(){
+  const ps=filtered();
+  const total=ps.reduce((a,p)=>a+collateralFlat(p).length,0);
+  const active=ps.filter(p=>["upcoming","in-progress"].includes(p.ipaStatus)||["upcoming","in-progress"].includes(p.paStatus)||["upcoming","in-progress"].includes(p.prStatus)).length;
+  const t=new Date(),m=t.getMonth(),y=t.getFullYear();
+  const soon=ps.filter(p=>[p.iPA,p.PA,p.PR].some(d=>{if(!d)return false;const dd=new Date(d+"T00:00:00");return dd.getMonth()===m&&dd.getFullYear()===y;})).length;
+  document.getElementById("stats-row").innerHTML=
+    `<div class="stat"><div class="lbl">Products tracked</div><div class="val">${ps.length}</div></div>
+     <div class="stat"><div class="lbl">Collateral items</div><div class="val">${total}</div></div>
+     <div class="stat"><div class="lbl">Active / upcoming</div><div class="val">${active}</div></div>
+     <div class="stat"><div class="lbl">Launches this month</div><div class="val">${soon}</div></div>`;
+}
+function renderPills(){
+  document.getElementById("port-pills").innerHTML=PORTFOLIOS.map(p=>
+    `<button class="pill${p===activePort?" active":""}" onclick="setPortfolio('${p}')">${p}</button>`).join("");
+}
+function renderToggles(){
+  document.getElementById("m-toggles").innerHTML=MILESTONES.map(m=>{
+    const on=visMS.has(m.key);
+    let shp="";
+    if(m.shape==="triangle")shp=`<svg width="12" height="12" style="flex-shrink:0"><polygon points="6,11 1,2 11,2" fill="${on?m.color:"var(--text3)"}"/></svg>`;
+    if(m.shape==="diamond")shp=`<svg width="12" height="12" style="flex-shrink:0"><polygon points="6,1 11,6 6,11 1,6" fill="${on?m.color:"var(--text3)"}"/></svg>`;
+    if(m.shape==="bar")shp=`<svg width="12" height="12" style="flex-shrink:0"><rect x="1" y="3" width="10" height="6" rx="2" fill="${on?m.color:"var(--text3)"}"/></svg>`;
+    if(m.shape==="star")shp=`<svg width="12" height="12" style="flex-shrink:0"><polygon points="6,1 7.2,4.3 10.8,4.3 8,6.5 9,10 6,8 3,10 4,6.5 1.2,4.3 4.8,4.3" fill="${on?m.color:"var(--text3)"}" stroke="${on?"#7a8800":"none"}" stroke-width="0.5"/></svg>`;
+    return`<button class="tog" onclick="toggleMS('${m.key}')"
+      style="border:0.5px solid ${on?m.color:"var(--border2)"};color:${on?m.color:"var(--text3)"};background:${on?m.color+"22":"none"};opacity:${on?1:.5}">
+      ${shp}${m.label}</button>`;
+  }).join("");
+}
+
+function renderGantt(){
+  const ps=filtered();
+  const tdPx=todayPx();
+  let html=`<table style="width:100%;border-collapse:collapse;"><tbody>`;
+  html+=`<tr style="background:var(--bg2)"><th style="width:${PORT_W}px;min-width:${PORT_W}px;border-bottom:0.5px solid var(--border2);border-right:0.5px solid var(--border);padding:0"></th><th style="width:${LABEL_W}px;min-width:${LABEL_W}px;padding:6px 10px;font-size:11px;font-weight:500;color:var(--text2);text-align:left;border-bottom:0.5px solid var(--border2);border-right:0.5px solid var(--border);position:sticky;left:${PORT_W}px;z-index:10;background:var(--bg2)">Product</th><th style="border-bottom:0.5px solid var(--border2);padding:0;font-weight:normal">${renderMonthHeader(tdPx)}</th></tr>`;
+  let lastPort="";
+  ps.forEach(p=>{
+    const portCell=p.portfolio!==lastPort?`<td rowspan="${ps.filter(x=>x.portfolio===p.portfolio).length}" style="width:${PORT_W}px;min-width:${PORT_W}px;border-bottom:0.5px solid var(--border2);border-right:0.5px solid var(--border);background:${PORT_COLORS[p.portfolio]||"#888"};padding:0;vertical-align:middle;text-align:center;"><span style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#fff;opacity:.95;white-space:nowrap;display:block">${p.portfolio}</span></td>`:"";
+    if(p.portfolio!==lastPort)lastPort=p.portfolio;
+    const svg=renderGanttRow(p,tdPx);
+    html+=`<tr onclick="openDrawer(${p.id})" style="cursor:pointer">${portCell}<td style="width:${LABEL_W}px;min-width:${LABEL_W}px;padding:5px 10px;border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);vertical-align:middle;position:sticky;left:${PORT_W}px;z-index:9;background:var(--bg)"><span style="font-size:12px;font-weight:500;display:block;margin-bottom:3px">${p.product}</span>${badge(p.type)}</td><td style="vertical-align:middle;border-bottom:0.5px solid var(--border);padding:0">${svg}</td></tr>`;
+  });
+  html+=`</tbody></table>`;
+  document.getElementById("gantt-table").innerHTML=html;
+  document.getElementById("gantt-legend").innerHTML=MILESTONES.map(m=>{let shp="";if(m.shape==="triangle")shp=`<svg width="14" height="14"><polygon points="7,13 1,2 13,2" fill="${m.color}" opacity=".85"/></svg>`;if(m.shape==="diamond")shp=`<svg width="14" height="14"><polygon points="7,1 13,7 7,13 1,7" fill="${m.color}" opacity=".85"/></svg>`;if(m.shape==="bar")shp=`<svg width="14" height="14"><rect x="1" y="3" width="12" height="8" rx="2" fill="${m.color}" opacity=".85"/></svg>`;if(m.shape==="star")shp=`<svg width="14" height="14"><polygon points="7,1 8.3,5 12,5 9,7.5 10.2,11.5 7,9 3.8,11.5 5,7.5 2,5 5.7,5" fill="${m.color}" stroke="#7a8800" stroke-width="0.5"/></svg>`;return`<span class="leg-item">${shp}${m.label}</span>`;}).join("")+`<span class="leg-item"><svg width="14" height="14"><line x1="7" y1="1" x2="7" y2="13" stroke="#E24B4A" stroke-width="1.5" stroke-dasharray="3 2"/></svg>Today</span><span style="margin-left:auto;font-size:11px;color:var(--text3)">Click any row to view${isEditMode?" · Edit mode active":""}</span>`;
+}
+
+function renderMonthHeader(tdPx){
+  const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  let svg=`<svg width="${GANTT_PX}" height="28" style="display:block">`;
+  for(let m=0;m<12;m++){
+    const d=new Date(2026,m,1);if(d<TL_START||d>TL_END)continue;
+    const x=Math.round((d-TL_START)/86400000*(GANTT_PX/TOTAL_DAYS));
+    svg+=`<line x1="${x}" y1="0" x2="${x}" y2="28" stroke="var(--border)" stroke-width="0.5"/>`;
+    svg+=`<text x="${x+4}" y="19" font-size="10" fill="var(--text2)" font-family="Inter,sans-serif">${months[m]} 26</text>`;
+  }
+  svg+=`<line x1="${tdPx}" y1="0" x2="${tdPx}" y2="28" stroke="#E24B4A" stroke-width="1.5" stroke-dasharray="3 2"/>`;
+  svg+=`<text x="${tdPx+3}" y="10" font-size="9" fill="#E24B4A" font-family="Inter,sans-serif">Today</text>`;
+  return svg+"</svg>";
+}
+
+function renderGanttRow(p,tdPx){
+  let svg=`<svg width="${GANTT_PX}" height="${ROW_H}" style="display:block">`;
+  for(let m=0;m<12;m++){const d=new Date(2026,m,1);if(d<TL_START||d>TL_END)continue;const x=Math.round((d-TL_START)/86400000*(GANTT_PX/TOTAL_DAYS));svg+=`<line x1="${x}" y1="0" x2="${x}" y2="${ROW_H}" stroke="var(--border)" stroke-width="0.5"/>`;}
+  svg+=`<line x1="${tdPx}" y1="0" x2="${tdPx}" y2="${ROW_H}" stroke="#E24B4A" stroke-width="1" opacity=".3"/>`;
+  MILESTONES.forEach(m=>{
+    if(!visMS.has(m.key))return;
+    if(m.key==="training"){(p.trainings||[]).forEach(t=>{const x=px(t.date);if(x===null)return;svg+=`<polygon points="${x},${ROW_H*0.28} ${x+1.2},${ROW_H*0.44} ${x+5.6},${ROW_H*0.44} ${x+2},${ROW_H*0.55} ${x+3.2},${ROW_H*0.71} ${x},${ROW_H*0.62} ${x-3.2},${ROW_H*0.71} ${x-2},${ROW_H*0.55} ${x-5.6},${ROW_H*0.44} ${x-1.2},${ROW_H*0.44}" fill="#DFF73F" stroke="#7a8800" stroke-width="0.8"><title>${t.name||"Training"}</title></polygon>`;});return;}
+    const x=px(p[m.key]);if(x===null)return;
+    if(m.shape==="triangle")svg+=`<polygon points="${x},${ROW_H*0.72} ${x-6},${ROW_H*0.34} ${x+6},${ROW_H*0.34}" fill="${m.color}" opacity=".85"/>`;
+    else if(m.shape==="diamond")svg+=`<polygon points="${x},${ROW_H*0.26} ${x+7},${ROW_H*0.5} ${x},${ROW_H*0.74} ${x-7},${ROW_H*0.5}" fill="${m.color}" opacity=".85"/>`;
+    else if(m.shape==="bar"){
+      const nextKey=m.key==="iPA"?"PA":m.key==="PA"?"PR":null;
+      const x2=nextKey&&p[nextKey]?px(p[nextKey]):x+5;
+      svg+=`<rect x="${x}" y="${ROW_H*0.16}" width="${Math.max(5,x2-x)}" height="${ROW_H*0.68}" rx="3" fill="${m.color}" opacity=".15"/>`;
+      svg+=`<rect x="${x}" y="${ROW_H*0.21}" width="5" height="${ROW_H*0.58}" rx="2" fill="${m.color}" opacity=".9"/>`;
+      svg+=`<text x="${x+9}" y="${ROW_H*0.55}" font-size="9" fill="${m.color}" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">${m.label.split(" ")[0]}</text>`;
+      if(m.shape==="bar"&&m.key==="PR"){svg+=`<rect x="${x}" y="${ROW_H*0.18}" width="16" height="${ROW_H*0.64}" rx="3" fill="${m.color}" opacity=".9"/>`;svg+=`<text x="${x+3}" y="${ROW_H*0.5}" font-size="8" fill="#fff" font-weight="600" dominant-baseline="central" font-family="Inter,sans-serif">PR</text>`;}
+    }
+  });
+  return svg+"</svg>";
+}
+
+function renderTable(){
+  const ps=filtered();
+  let html=`<thead><tr><th>Product</th><th>Type</th><th>PG</th><th>Pilot</th><th>iPA</th><th>PA</th><th>Training</th><th>PR</th><th>Collateral</th></tr></thead><tbody>`;
+  ps.forEach(p=>{
+    const total=collateralFlat(p).length;
+    html+=`<tr onclick="openDrawer(${p.id})" style="cursor:pointer"><td style="font-weight:500">${p.product}</td><td>${badge(p.type)}</td><td><div style="font-size:11px">${fmt(p.pg)}</div>${sbadge(p.pgStatus)}</td><td><div style="font-size:11px">${fmt(p.pilot)}</div>${sbadge(p.pilotStatus)}</td><td><div style="font-size:11px">${fmt(p.iPA)}</div>${sbadge(p.ipaStatus)}</td><td><div style="font-size:11px">${fmt(p.PA)}</div>${sbadge(p.paStatus)}</td><td><div style="font-size:11px;color:#7a8800;font-weight:500">${(p.trainings||[]).length?((p.trainings||[]).map(t=>`★ ${t.name||"Training"}${t.date?" ("+fmt(t.date)+")":""}`).join("<br>")):"—"}</div></td><td><div style="font-size:11px">${fmt(p.PR)}</div>${sbadge(p.prStatus)}</td><td style="color:var(--text2);font-size:11px">${total} items</td></tr>`;
+  });
+  html+=`</tbody>`;
+  document.getElementById("data-table").innerHTML=html;
+}
+
+function openDrawer(id){
+  currentDrawerId=id;
+  const p=PRODUCTS.find(x=>x.id===id);if(!p)return;
+  document.getElementById("drawer-head-content").innerHTML=`<div style="margin-top:2px"><span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:${PORT_COLORS[p.portfolio]||"#888"}">${p.portfolio}</span><div style="font-size:17px;font-weight:600;margin:3px 0 6px">${p.product}</div>${badge(p.type)}</div>`;
+  const tabs=[{id:"collateral",label:"Collateral plan"},{id:"milestones",label:"Milestones"},{id:"regional",label:"For teams"}];
+  document.getElementById("drawer-tabs").innerHTML=tabs.map((t,i)=>`<button id="tab-btn-${t.id}" onclick="setTab('${t.id}')" style="padding:7px 14px;font-size:12px;font-weight:500;border:none;border-bottom:2px solid ${currentTab===t.id?"var(--hx-blue)":"transparent"};background:none;cursor:pointer;font-family:var(--font);color:${currentTab===t.id?"var(--hx-blue)":"var(--text2)"}">${t.label}</button>`).join("");
+  document.getElementById("drawer-edit-btn").style.display = isEditMode ? "block" : "none";
+  renderTabCollateral(p);
+  renderTabMilestones(p);
+  renderTabRegional(p);
+  setTab(currentTab);
+  document.getElementById("drawer").classList.add("open");
+  document.getElementById("overlay").classList.add("open");
+}
+function closeDrawer(){document.getElementById("drawer").classList.remove("open");document.getElementById("overlay").classList.remove("open");}
+function setTab(t){
+  currentTab=t;
+  ["collateral","milestones","regional"].forEach(id=>{
+    document.getElementById("tab-"+id).style.display=id===t?"block":"none";
+    const btn=document.getElementById("tab-btn-"+id);
+    if(btn){btn.style.borderBottomColor=id===t?"var(--hx-blue)":"transparent";btn.style.color=id===t?"var(--hx-blue)":"var(--text2)";}
+  });
+}
+
+function renderTabCollateral(p){
+  const bs=p.collateralByStage||{};
+  let html=`<p class="sec-title">Collateral by stage</p>`;
+  ["iPA","PA","PR","post","campaign"].forEach((k,si)=>{
+    const m=STAGE_META[k];const items=bs[k]||[];const date=p[k];const statusKey=MSTATUS_KEYS[k];const status=statusKey?p[statusKey]:null;
+    html+=`<div class="stage-card"><div class="stage-card-head" onclick="toggleStageCard(this)" style="border-left:3px solid ${m.color}"><span style="font-size:11px;font-weight:600;color:${m.color}">${m.label.split("—")[0].trim()}</span>${date?`<span style="font-size:11px;color:var(--text2)">${fmt(date)}</span>`:""} ${status?sbadge(status):""}<span style="font-size:11px;color:var(--text3);margin-left:4px">${items.length} item${items.length!==1?"s":""}</span><span class="stage-chevron">▼</span></div><div class="stage-card-body${si===0?" open":""}"><p style="font-size:10px;color:var(--text3);margin-bottom:6px;font-style:italic">${m.label.includes("—")?m.label.split("—")[1].trim():""}</p>${items.length?items.map(c=>`<div class="coll-item"><span class="coll-dot" style="background:${m.color}"></span><span style="flex:1">${itemLabel(c)}</span>${itemUrl(c)?`<a href="${itemUrl(c)}" target="_blank" class="coll-link">Open ↗</a>`:isEditMode?`<span class="coll-link" style="color:var(--text3);cursor:pointer" onclick="addLink(${p.id},'${k}','${itemLabel(c).replace(/'/g,"\\'")}')">+ link</span>`:""}</div>`).join(""):`<p style="font-size:12px;color:var(--text3);font-style:italic;padding:6px 0">No collateral planned for this stage</p>`}</div></div>`;
+  });
+  html+=`<button class="sec-btn" onclick="copyCollateral(${p.id})">Copy all collateral list</button>`;
+  document.getElementById("tab-collateral").innerHTML=html;
+}
+
+function renderTabMilestones(p){
+  let html=`<p class="sec-title">Timeline milestones</p>`;
+  MILESTONES.filter(m=>m.key!=="training").forEach(m=>{
+    const date=p[m.key];const statusKey=MSTATUS_KEYS[m.key];const status=statusKey?p[statusKey]:null;
+    if(!date&&!status)return;
+    html+=`<div class="milestone-row"><div style="display:flex;align-items:center;gap:8px"><span class="m-dot" style="background:${m.color}"></span><span style="font-size:12px;font-weight:500">${m.label}</span></div><div style="display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:var(--text2)">${fmt(date)}</span>${status?sbadge(status):""}</div></div>`;
+  });
+  const trainings=p.trainings||[];
+  if(trainings.length){
+    html+=`<p class="sec-title" style="margin-top:18px">Training sessions</p>`;
+    trainings.forEach(t=>{
+      html+=`<div class="training-block" style="margin-bottom:8px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><p style="font-size:11px;font-weight:600;color:#5a6600;margin:0">★ ${t.name||"Training"}</p></div><div style="display:grid;gap:5px"><div style="display:flex;gap:8px;font-size:12px"><span style="color:#7a8800;font-weight:500;width:80px">Date</span><span style="color:var(--text2)">${fmt(t.date)||"TBC"}</span></div><div style="display:flex;gap:8px;font-size:12px"><span style="color:#7a8800;font-weight:500;width:80px">Audience</span><span style="color:var(--text2)">${t.audience||"Global sales team"}</span></div><div style="display:flex;gap:8px;font-size:12px"><span style="color:#7a8800;font-weight:500;width:80px">Materials</span><span style="color:var(--text2)">${t.materials||"Sales enablement deck"}</span></div></div></div>`;
+    });
+  }
+  if(p.notes)html+=`<p class="sec-title" style="margin-top:18px">Notes</p><p style="font-size:12px;color:var(--text2);line-height:1.6">${p.notes}</p>`;
+  document.getElementById("tab-milestones").innerHTML=html;
+}
+
+function renderTabRegional(p){
+  const bs=p.collateralByStage||{};
+  const ipaItems=bs.iPA||[];const paItems=bs.PA||[];const prItems=bs.PR||[];const postItems=bs.post||[];const campItems=p.campaignItems||[];const allItems=collateralFlat(p);
+  let html=`<p class="sec-title">For sales team</p><div class="audience-section"><div class="audience-row"><span class="aud-icon">🗓️</span><div><div class="aud-label">When to expect sales materials</div><div class="aud-text">${p.iPA?`<strong>Internal briefing (iPA):</strong> ${fmt(p.iPA)} — Sales enablement deck available before public launch.<br>`:""}${p.PA||p.PR?`<strong>Public launch (PA/PR):</strong> ${fmt(p.PA||p.PR)} — Full collateral pack available for customer conversations.`:""}</div></div></div><div class="audience-row"><span class="aud-icon">📦</span><div><div class="aud-label">Materials available at iPA</div><div class="aud-text">${ipaItems.length?ipaItems.map(c=>itemLabel(c)).join(", "):"None — product goes straight to PA/PR."}</div></div></div><div class="audience-row"><span class="aud-icon">🌍</span><div><div class="aud-label">Materials available at PA/PR</div><div class="aud-text">${[...paItems,...prItems].length?[...paItems,...prItems].map(c=>itemLabel(c)).join(", "):"TBC"}</div></div></div></div>`;
+  html+=`<p class="sec-title">Regional marketing &amp; campaign schedule</p><div class="audience-section">`;
+  if(campItems.length){campItems.forEach(ci=>{html+=`<div class="audience-row" style="align-items:center"><span class="aud-icon">🎯</span><div style="flex:1"><div class="aud-label">${ci.name}</div><div class="aud-text">${ci.date?`Scheduled: <strong>${fmt(ci.date)}</strong>`:"Date TBC"}</div></div></div>`;});}
+  else{html+=`<div class="audience-row"><span class="aud-icon">🎯</span><div><div class="aud-label">No campaign activities scheduled yet</div></div></div>`;}
+  html+=`</div>`;
+  const trainings=p.trainings||[];
+  if(trainings.length){html+=`<p class="sec-title">Training sessions</p><div class="audience-section">`;trainings.forEach(t=>{html+=`<div class="audience-row" style="align-items:center"><span class="aud-icon">★</span><div><div class="aud-label">${t.name||"Training"}</div><div class="aud-text">${t.date?`<strong>${fmt(t.date)}</strong>`:""} ${t.audience?"· "+t.audience:""} ${t.materials?"<br>Materials: "+t.materials:""}</div></div></div>`;});html+=`</div>`;}
+  document.getElementById("tab-regional").innerHTML=html;
+}
+
+function addLink(productId,stage,itemText){
+  if(!isEditMode)return;
+  const url=prompt(`Enter URL for "${itemText}":`);
+  if(!url)return;
+  const idx=PRODUCTS.findIndex(x=>x.id===productId);if(idx===-1)return;
+  const items=PRODUCTS[idx].collateralByStage[stage]||[];
+  const iIdx=items.findIndex(c=>itemLabel(c)===itemText);
+  if(iIdx===-1)return;
+  items[iIdx]={text:itemText,url};
+  saveToCloud();
+  renderTabCollateral(PRODUCTS[idx]);
+  toast("Link saved");
+}
+function toggleStageCard(head){const body=head.nextElementSibling;body.classList.toggle("open");head.querySelector(".stage-chevron").style.transform=body.classList.contains("open")?"rotate(180deg)":"";}
+function copyCollateral(id){const p=PRODUCTS.find(x=>x.id===id);if(!p)return;const bs=p.collateralByStage||{};const lines=[`${p.product} — Collateral plan`,""];["iPA","PA","PR","post","campaign"].forEach(k=>{const items=bs[k]||[];if(!items.length)return;lines.push(STAGE_META[k].label);items.forEach(c=>lines.push(`  · ${itemLabel(c)}${itemUrl(c)?" → "+itemUrl(c):""}` ));lines.push("");});navigator.clipboard.writeText(lines.join("\n")).then(()=>toast("Copied!")).catch(()=>toast("Copy failed"));}
+
+function openEditModal(id){
+  if(!isEditMode)return;
+  const p=PRODUCTS.find(x=>x.id===id);if(!p)return;
+  const dfs=[{key:"pg",skey:"pgStatus",label:"Proving Ground"},{key:"pilot",skey:"pilotStatus",label:"Pilot"},{key:"iPA",skey:"ipaStatus",label:"iPA"},{key:"training",skey:null,label:"Training date"},{key:"PA",skey:"paStatus",label:"PA"},{key:"PR",skey:"prStatus",label:"PR"}];
+  const opts=["","done","in-progress","upcoming","planned","open"];
+  const bs=p.collateralByStage||{};
+  document.getElementById("modal-content").innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h3 style="font-size:15px;font-weight:600;margin:0">Edit: ${p.product}</h3>
+      <button onclick="closeModal()" style="background:none;border:none;cursor:pointer;font-size:22px;color:var(--text2);line-height:1">×</button>
+    </div>
+    <div class="field-row" style="margin-bottom:10px">
+      <div class="field-group" style="margin-bottom:0"><label>Product name</label><input id="e-product" value="${p.product||""}"/></div>
+      <div class="field-group" style="margin-bottom:0"><label>Type</label><select id="e-type">${["Mega","Major","Minor"].map(t=>`<option${p.type===t?" selected":""}>${t}</option>`).join("")}</select></div>
+    </div>
+    <hr style="border:none;border-top:0.5px solid var(--border);margin:12px 0"/>
+    <p style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin-bottom:10px">Dates &amp; statuses</p>
+    ${dfs.map(f=>`<div class="${f.skey?"field-row":"field-group"}" style="margin-bottom:8px"><div class="field-group" style="margin-bottom:0"><label>${f.label} (YYYY-MM-DD)</label><input id="e-${f.key}" value="${p[f.key]||""}" placeholder="e.g. 2026-07-20"/></div>${f.skey?`<div class="field-group" style="margin-bottom:0"><label>Status</label><select id="e-${f.skey}">${opts.map(s=>`<option value="${s}"${p[f.skey]===s?" selected":""}>${s||"— none —"}</option>`).join("")}</select></div>`:""}</div>`).join("")}
+    <div class="field-group"><label style="color:#7a8800;font-weight:500">★ Training sessions (one per line: Name | YYYY-MM-DD | Audience | Materials)</label><textarea id="e-trainings" rows="4" placeholder="e.g. Product Webinar | 2026-09-16 | Global sales team | Sales enablement deck">${(p.trainings||[]).map(t=>[t.name,t.date||"",t.audience||"",t.materials||""].join(" | ")).join("\n")}</textarea></div>
+    <hr style="border:none;border-top:0.5px solid var(--border);margin:12px 0"/>
+    <p style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin-bottom:10px">Collateral by stage (one item per line)</p>
+    ${["iPA","PA","PR","post"].map(k=>`<div class="field-group"><label style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:1px;background:${STAGE_META[k].color};flex-shrink:0"></span>${STAGE_META[k].label.split("—")[0].trim()}</label><textarea id="e-coll-${k}" rows="3">${(bs[k]||[]).map(c=>itemLabel(c)).join("\n")}</textarea></div>`).join("")}
+    <div class="field-group" style="background:#f7ffcc;border:0.5px solid #b8c400;border-radius:8px;padding:10px 12px;margin-top:4px"><label style="font-weight:600;color:#5a6600;margin-bottom:6px;display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:1px;background:#a0b000;flex-shrink:0"></span>Regional marketing &amp; campaign activities</label><label style="font-size:11px;color:#7a8800;margin-bottom:4px;display:block">One activity per line: Activity name | YYYY-MM-DD</label><textarea id="e-campaign-items" rows="5" placeholder="e.g. Regional launch campaign | 2026-10-15">${(p.campaignItems||[]).map(ci=>ci.name+(ci.date?" | "+ci.date:"")).join("\n")}</textarea></div>
+    <div class="field-group"><label>Notes</label><textarea id="e-notes" rows="3">${p.notes||""}</textarea></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveEdit(${p.id})">Save changes</button>
+    </div>`;
+  document.getElementById("modal-overlay").classList.add("open");
+}
+function closeModal(){document.getElementById("modal-overlay").classList.remove("open");}
+
+function saveEdit(id){
+  if(!isEditMode)return;
+  const idx=PRODUCTS.findIndex(x=>x.id===id);if(idx===-1)return;
+  const old=JSON.parse(JSON.stringify(PRODUCTS[idx]));
+  const p=PRODUCTS[idx];
+  const g=k=>{const el=document.getElementById("e-"+k);return el?el.value.trim()||null:p[k];};
+  const gc=k=>{
+    if(k==="campaign"){const el=document.getElementById("e-campaign-items");if(el&&el.value.trim()){return el.value.split("\n").map(l=>l.split("|")[0].trim()).filter(Boolean);}return(p.collateralByStage||{})["campaign"]||[];}
+    const el=document.getElementById("e-coll-"+k);return el?(el.value.split("\n").map(s=>s.trim()).filter(Boolean)):((p.collateralByStage||{})[k]||[]);
+  };
+  const trainingsRaw=(document.getElementById("e-trainings")?.value||"").trim();
+  const trainings=trainingsRaw?trainingsRaw.split("\n").map(l=>{const parts=l.split("|").map(s=>s.trim());return{name:parts[0]||"Training",date:parts[1]||"",audience:parts[2]||"",materials:parts[3]||""};}).filter(t=>t.name):(p.trainings||[]);
+  const campRaw=(document.getElementById("e-campaign-items")?.value||"").trim();
+  const campaignItems=campRaw?campRaw.split("\n").map(l=>{const parts=l.split("|").map(s=>s.trim());return{name:parts[0]||"Campaign activity",date:parts[1]||""};}).filter(c=>c.name):(p.campaignItems||[]);
+  PRODUCTS[idx]={...p,product:g("product")||p.product,type:g("type")||p.type,pg:g("pg"),pilot:g("pilot"),iPA:g("iPA"),trainings,campaignItems,PA:g("PA"),PR:g("PR"),pgStatus:g("pgStatus"),pilotStatus:g("pilotStatus"),ipaStatus:g("ipaStatus"),paStatus:g("paStatus"),prStatus:g("prStatus"),collateralByStage:{iPA:gc("iPA"),PA:gc("PA"),PR:gc("PR"),post:gc("post"),campaign:gc("campaign")},notes:(document.getElementById("e-notes")?.value||"").trim()};
+  const changes=[];
+  const fields=["iPA","PA","PR","pg","pilot","pgStatus","pilotStatus","ipaStatus","paStatus","prStatus","notes"];
+  fields.forEach(f=>{if(old[f]!==PRODUCTS[idx][f])changes.push(`${f}: "${old[f]||"—"}" → "${PRODUCTS[idx][f]||"—"}"`)});
+  const oldColl=JSON.stringify(old.collateralByStage);const newColl=JSON.stringify(PRODUCTS[idx].collateralByStage);
+  if(oldColl!==newColl)changes.push("Collateral plan updated");
+  const summary=changes.length?changes.join("\n"):"Minor update";
+  const entry={time:new Date().toLocaleString("en-GB",{dateStyle:"short",timeStyle:"short"}),who:"PMM",product:PRODUCTS[idx].product,summary};
+  changeLog.unshift(entry);
+  saveToCloud();
+  renderAll();
+  renderChangeLog();
+  closeModal();
+  if(currentDrawerId===id)openDrawer(id);
+  toast("✓ Saved — visible to everyone now");
+}
+
+function renderChangeLog(){
+  const el=document.getElementById("changelog-entries");
+  if(!changeLog.length){el.innerHTML=`<p style="font-size:11px;color:var(--text3);font-style:italic">No changes recorded yet.</p>`;return;}
+  el.innerHTML=changeLog.slice(0,10).map(e=>`<div class="log-entry"><span class="log-time">${e.time}</span><span class="log-who">${e.who}</span><span><strong>${e.product}</strong> — ${e.summary.split("\n")[0]}${e.summary.split("\n").length>1?" (+more)":""}</span></div>`).join("");
+}
+
+function setView(v){currentView=v;document.getElementById("view-gantt").style.display=v==="gantt"?"block":"none";document.getElementById("view-table").style.display=v==="table"?"block":"none";document.getElementById("btn-gantt").classList.toggle("active",v==="gantt");document.getElementById("btn-table").classList.toggle("active",v==="table");if(v==="table")renderTable();}
+function setPortfolio(p){activePort=p;renderAll();}
+function toggleMS(key){visMS.has(key)?visMS.delete(key):visMS.add(key);renderToggles();renderGantt();}
+function renderAll(){renderStats();renderPills();renderToggles();renderGantt();if(currentView==="table")renderTable();}
+
+// Show Edit button to everyone (they need password to activate)
+document.getElementById("edit-access-btn").style.display = "block";
+
+// Load data from cloud on startup
+loadFromCloud();
+</script>
+</body>
+</html>
